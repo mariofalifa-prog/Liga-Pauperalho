@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico Completo do Site - Liga Pauperalho</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .diagnostic-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .diagnostic-section.success {
+            border-color: #4caf50;
+            background-color: #f1f8e9;
+        }
+
+        .diagnostic-section.error {
+            border-color: #f44336;
+            background-color: #ffebee;
+        }
+
+        .diagnostic-section.warning {
+            border-color: #ff9800;
+            background-color: #fff3e0;
+        }
+
+        .diagnostic-section.info {
+            border-color: #2196f3;
+            background-color: #e3f2fd;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            font-size: 1.2em;
+        }
+
+        .diagnostic-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            background: white;
+        }
+
+        .diagnostic-item.success {
+            color: #4caf50;
+            border-left: 4px solid #4caf50;
+        }
+
+        .diagnostic-item.error {
+            color: #f44336;
+            border-left: 4px solid #f44336;
+        }
+
+        .diagnostic-item.warning {
+            color: #ff9800;
+            border-left: 4px solid #ff9800;
+        }
+
+        .diagnostic-item i {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn.success {
+            background: #4caf50;
+        }
+
+        .btn.error {
+            background: #f44336;
+        }
+
+        .btn.warning {
+            background: #ff9800;
+        }
+
+        .console-output {
+            background: #1e1e1e;
+            color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+            white-space: pre-wrap;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .status-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .status-card h3 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .status-card.success { color: #4caf50; }
+        .status-card.error { color: #f44336; }
+        .status-card.warning { color: #ff9800; }
+        .status-card.info { color: #2196f3; }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-stethoscope"></i> Diagnóstico Completo do Site</h1>
+            <p>Verificação completa de todos os componentes e funcionalidades da Liga Pauperalho</p>
+        </div>
+
+        <div class="content">
+            <!-- Status Summary -->
+            <div class="status-summary" id="statusSummary">
+                <div class="status-card success">
+                    <h3 id="successCount">0</h3>
+                    <p>✅ Sucesso</p>
+                </div>
+                <div class="status-card error">
+                    <h3 id="errorCount">0</h3>
+                    <p>❌ Erros</p>
+                </div>
+                <div class="status-card warning">
+                    <h3 id="warningCount">0</h3>
+                    <p>⚠️ Avisos</p>
+                </div>
+                <div class="status-card info">
+                    <h3 id="infoCount">0</h3>
+                    <p>ℹ️ Informações</p>
+                </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <p style="text-align: center; margin-bottom: 20px;">
+                <span id="progressText">Aguardando início do diagnóstico...</span>
+            </p>
+
+            <!-- Control Buttons -->
+            <div style="text-align: center; margin: 30px 0;">
+                <button class="btn" onclick="startFullDiagnostic()">
+                    <i class="fas fa-play"></i> Iniciar Diagnóstico Completo
+                </button>
+                <button class="btn success" onclick="testLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Testar Login Admin
+                </button>
+                <button class="btn warning" onclick="testLocalStorage()">
+                    <i class="fas fa-database"></i> Testar Armazenamento
+                </button>
+                <button class="btn error" onclick="clearAllData()">
+                    <i class="fas fa-trash"></i> Limpar Todos os Dados
+                </button>
+            </div>
+
+            <!-- JavaScript Modules Check -->
+            <div class="diagnostic-section" id="jsModulesSection">
+                <h2 class="section-title">
+                    <i class="fas fa-cogs"></i> Módulos JavaScript
+                </h2>
+                <div id="jsModulesResults"></div>
+            </div>
+
+            <!-- HTML Structure Check -->
+            <div class="diagnostic-section" id="htmlStructureSection">
+                <h2 class="section-title">
+                    <i class="fas fa-code"></i> Estrutura HTML
+                </h2>
+                <div id="htmlStructureResults"></div>
+            </div>
+
+            <!-- CSS Files Check -->
+            <div class="diagnostic-section" id="cssFilesSection">
+                <h2 class="section-title">
+                    <i class="fas fa-palette"></i> Arquivos CSS
+                </h2>
+                <div id="cssFilesResults"></div>
+            </div>
+
+            <!-- Authentication System -->
+            <div class="diagnostic-section" id="authSystemSection">
+                <h2 class="section-title">
+                    <i class="fas fa-user-shield"></i> Sistema de Autenticação
+                </h2>
+                <div id="authSystemResults"></div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="diagnostic-section" id="dataManagementSection">
+                <h2 class="section-title">
+                    <i class="fas fa-database"></i> Gerenciamento de Dados
+                </h2>
+                <div id="dataManagementResults"></div>
+            </div>
+
+            <!-- Console Output -->
+            <div class="diagnostic-section info">
+                <h2 class="section-title">
+                    <i class="fas fa-terminal"></i> Console de Diagnóstico
+                </h2>
+                <div class="console-output" id="consoleOutput">Aguardando diagnóstico...</div>
+                <button class="btn" onclick="clearConsole()" style="margin-top: 10px;">
+                    <i class="fas fa-eraser"></i> Limpar Console
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/utils.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/league.js"></script>
+    <script src="js/rankings.js"></script>
+    <script src="js/games.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        // Diagnostic state
+        let diagnosticResults = {
+            success: 0,
+            error: 0,
+            warning: 0,
+            info: 0
+        };
+
+        let currentTest = 0;
+        const totalTests = 5;
+
+        // Console override
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn,
+            info: console.info
+        };
+
+        function logToConsole(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const icon = type === 'error' ? '❌' : type === 'warning' ? '⚠️' : type === 'success' ? '✅' : 'ℹ️';
+            const consoleOutput = document.getElementById('consoleOutput');
+            consoleOutput.innerHTML += `[${timestamp}] ${icon} ${message}\n`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+
+            // Also log to original console
+            originalConsole[type] && originalConsole[type](message);
+        }
+
+        // Override console methods
+        console.log = function(...args) {
+            logToConsole(args.join(' '), 'info');
+            originalConsole.log.apply(console, args);
+        };
+
+        console.error = function(...args) {
+            logToConsole(args.join(' '), 'error');
+            originalConsole.error.apply(console, args);
+        };
+
+        console.warn = function(...args) {
+            logToConsole(args.join(' '), 'warning');
+            originalConsole.warn.apply(console, args);
+        };
+
+        function updateStatus(type) {
+            diagnosticResults[type]++;
+            document.getElementById(type + 'Count').textContent = diagnosticResults[type];
+        }
+
+        function addDiagnosticResult(sectionId, message, type, details = '') {
+            const section = document.getElementById(sectionId + 'Results');
+            const item = document.createElement('div');
+            item.className = `diagnostic-item ${type}`;
+
+            let icon = 'info-circle';
+            if (type === 'success') icon = 'check-circle';
+            else if (type === 'error') icon = 'times-circle';
+            else if (type === 'warning') icon = 'exclamation-triangle';
+
+            item.innerHTML = `
+                <i class="fas fa-${icon}"></i>
+                <div style="flex: 1;">
+                    <strong>${message}</strong>
+                    ${details ? `<br><small>${details}</small>` : ''}
+                </div>
+            `;
+
+            section.appendChild(item);
+            updateStatus(type);
+        }
+
+        function updateProgress(current, total, message) {
+            const percentage = (current / total) * 100;
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = message;
+        }
+
+        async function testJavaScriptModules() {
+            logToConsole('🔍 Testando módulos JavaScript...', 'info');
+
+            const modules = [
+                { name: 'Utils', obj: window.Utils },
+                { name: 'dataManager', obj: window.dataManager },
+                { name: 'authManager', obj: window.authManager },
+                { name: 'leagueManager', obj: window.leagueManager },
+                { name: 'rankingsManager', obj: window.rankingsManager },
+                { name: 'gamesManager', obj: window.gamesManager },
+                { name: 'adminManager', obj: window.adminManager },
+                { name: 'ligaApp', obj: window.ligaApp }
+            ];
+
+            let successCount = 0;
+
+            modules.forEach(module => {
+                if (module.obj && typeof module.obj === 'object') {
+                    addDiagnosticResult('jsModulesSection', `${module.name} carregado com sucesso`, 'success');
+                    successCount++;
+                } else {
+                    addDiagnosticResult('jsModulesSection', `${module.name} não encontrado ou inválido`, 'error');
+                }
+            });
+
+            logToConsole(`✅ Módulos JavaScript: ${successCount}/${modules.length} carregados`, 'success');
+        }
+
+        async function testHTMLStructure() {
+            logToConsole('🔍 Testando estrutura HTML...', 'info');
+
+            // Check critical elements
+            const criticalElements = [
+                { id: 'header', name: 'Header' },
+                { id: 'modalOverlay', name: 'Modal Overlay' },
+                { id: 'modalContent', name: 'Modal Content' },
+                { id: 'notificationContainer', name: 'Notification Container' },
+                { id: 'userArea', name: 'User Area' },
+                { id: 'authButtons', name: 'Auth Buttons' },
+                { id: 'loginBtn', name: 'Login Button' },
+                { id: 'registerBtn', name: 'Register Button' }
+            ];
+
+            criticalElements.forEach(element => {
+                const el = document.getElementById(element.id);
+                if (el) {
+                    addDiagnosticResult('htmlStructureSection', `${element.name} encontrado`, 'success');
+                } else {
+                    addDiagnosticResult('htmlStructureSection', `${element.name} (ID: ${element.id}) não encontrado`, 'error');
+                }
+            });
+        }
+
+        async function testCSSFiles() {
+            logToConsole('🔍 Testando arquivos CSS...', 'info');
+
+            const cssFiles = [
+                'css/main.css',
+                'css/components.css',
+                'css/responsive.css',
+                'css/animations.css'
+            ];
+
+            for (const file of cssFiles) {
+                try {
+                    const link = document.querySelector(`link[href="${file}"]`);
+                    if (link) {
+                        addDiagnosticResult('cssFilesSection', `CSS ${file} carregado`, 'success');
+                    } else {
+                        addDiagnosticResult('cssFilesSection', `CSS ${file} não encontrado no HTML`, 'error');
+                    }
+                } catch (error) {
+                    addDiagnosticResult('cssFilesSection', `Erro ao verificar ${file}: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        async function testAuthenticationSystem() {
+            logToConsole('🔍 Testando sistema de autenticação...', 'info');
+
+            try {
+                // Test authManager
+                if (window.authManager) {
+                    addDiagnosticResult('authSystemSection', 'authManager instanciado', 'success');
+
+                    // Test admin user creation
+                    const adminUser = dataManager.getUserByEmail('admin@pauperalho.com');
+                    if (adminUser) {
+                        addDiagnosticResult('authSystemSection', 'Usuário admin encontrado', 'success', `Email: ${adminUser.email}`);
+
+                        // Test admin login
+                        const loginSuccess = authManager.handleAdminLogin
+                            ? authManager.handleAdminLogin('admin@pauperalho.com', 'admin123')
+                            : false;
+
+                        if (loginSuccess) {
+                            addDiagnosticResult('authSystemSection', 'Login admin funciona corretamente', 'success');
+                        } else {
+                            addDiagnosticResult('authSystemSection', 'Login admin não funciona', 'warning');
+                        }
+                    } else {
+                        addDiagnosticResult('authSystemSection', 'Usuário admin não encontrado', 'error');
+                    }
+                } else {
+                    addDiagnosticResult('authSystemSection', 'authManager não encontrado', 'error');
+                }
+            } catch (error) {
+                addDiagnosticResult('authSystemSection', `Erro no sistema de autenticação: ${error.message}`, 'error');
+            }
+        }
+
+        async function testDataManagement() {
+            logToConsole('🔍 Testando gerenciamento de dados...', 'info');
+
+            try {
+                if (window.dataManager) {
+                    addDiagnosticResult('dataManagementSection', 'dataManager instanciado', 'success');
+
+                    // Test localStorage
+                    const testData = { test: 'diagnostic', timestamp: Date.now() };
+                    localStorage.setItem('diagnosticTest', JSON.stringify(testData));
+                    const retrieved = JSON.parse(localStorage.getItem('diagnosticTest'));
+
+                    if (retrieved && retrieved.test === 'diagnostic') {
+                        addDiagnosticResult('dataManagementSection', 'localStorage funciona corretamente', 'success');
+                        localStorage.removeItem('diagnosticTest');
+                    } else {
+                        addDiagnosticResult('dataManagementSection', 'localStorage não está funcionando', 'error');
+                    }
+
+                    // Test data methods
+                    try {
+                        const users = dataManager.getAllUsers();
+                        addDiagnosticResult('dataManagementSection', `Gerenciamento de usuários funciona (${users.length} usuários)`, 'success');
+                    } catch (error) {
+                        addDiagnosticResult('dataManagementSection', `Erro no gerenciamento de usuários: ${error.message}`, 'error');
+                    }
+                } else {
+                    addDiagnosticResult('dataManagementSection', 'dataManager não encontrado', 'error');
+                }
+            } catch (error) {
+                addDiagnosticResult('dataManagementSection', `Erro no gerenciamento de dados: ${error.message}`, 'error');
+            }
+        }
+
+        async function startFullDiagnostic() {
+            logToConsole('🚀 Iniciando diagnóstico completo...', 'info');
+
+            // Reset counters
+            diagnosticResults = { success: 0, error: 0, warning: 0, info: 0 };
+            Object.keys(diagnosticResults).forEach(key => {
+                document.getElementById(key + 'Count').textContent = '0';
+            });
+
+            // Clear previous results
+            ['jsModules', 'htmlStructure', 'cssFiles', 'authSystem', 'dataManagement'].forEach(section => {
+                document.getElementById(section + 'Results').innerHTML = '';
+            });
+
+            const tests = [
+                { name: 'Testando módulos JavaScript', fn: testJavaScriptModules },
+                { name: 'Testando estrutura HTML', fn: testHTMLStructure },
+                { name: 'Testando arquivos CSS', fn: testCSSFiles },
+                { name: 'Testando autenticação', fn: testAuthenticationSystem },
+                { name: 'Testando gerenciamento de dados', fn: testDataManagement }
+            ];
+
+            for (let i = 0; i < tests.length; i++) {
+                updateProgress(i + 1, tests.length, tests[i].name);
+                await tests[i].fn();
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
+            updateProgress(tests.length, tests.length, 'Diagnóstico concluído!');
+            logToConsole('🎉 Diagnóstico completo finalizado!', 'success');
+
+            // Summary
+            const total = diagnosticResults.success + diagnosticResults.error + diagnosticResults.warning;
+            if (total === 0) {
+                logToConsole('Nenhum teste foi executado', 'warning');
+            } else if (diagnosticResults.error === 0) {
+                logToConsole(`✅ Ótimo! Nenhum erro encontrado. ${diagnosticResults.success}/${total} testes passaram`, 'success');
+            } else {
+                logToConsole(`❌ ${diagnosticResults.error} erros encontrados de ${total} testes totais`, 'error');
+            }
+        }
+
+        function testLogin() {
+            logToConsole('🔐 Testando login automático como admin...', 'info');
+
+            try {
+                if (window.dataManager && window.authManager) {
+                    // Create admin if not exists
+                    let adminUser = dataManager.getUserByEmail('admin@pauperalho.com');
+                    if (!adminUser) {
+                        adminUser = dataManager.createUser({
+                            name: 'Administrador',
+                            email: 'admin@pauperalho.com',
+                            password: 'admin123',
+                            role: 'admin'
+                        });
+                        logToConsole('✅ Usuário admin criado com sucesso', 'success');
+                    }
+
+                    // Simulate login
+                    const session = dataManager.createSession(adminUser.id, false);
+                    sessionStorage.setItem('ligaSessionToken', session.token);
+
+                    authManager.currentUser = adminUser;
+                    authManager.sessionToken = session.token;
+                    authManager.updateUI();
+
+                    logToConsole(`✅ Login realizado como: ${adminUser.name} (${adminUser.email})`, 'success');
+                    logToConsole('🔑 Token de sessão: ' + session.token.substring(0, 8) + '...', 'info');
+                } else {
+                    logToConsole('❌ dataManager ou authManager não encontrados', 'error');
+                }
+            } catch (error) {
+                logToConsole('❌ Erro no login: ' + error.message, 'error');
+            }
+        }
+
+        function testLocalStorage() {
+            logToConsole('💾 Testando armazenamento local...', 'info');
+
+            try {
+                const testData = {
+                    timestamp: Date.now(),
+                    test: 'localStorage',
+                    random: Math.random()
+                };
+
+                // Test localStorage
+                localStorage.setItem('testDiagnostic', JSON.stringify(testData));
+                const retrieved = JSON.parse(localStorage.getItem('testDiagnostic'));
+
+                if (retrieved && retrieved.timestamp === testData.timestamp) {
+                    logToConsole('✅ localStorage funcionando corretamente', 'success');
+                    localStorage.removeItem('testDiagnostic');
+                } else {
+                    logToConsole('❌ localStorage com problemas', 'error');
+                }
+
+                // Test sessionStorage
+                sessionStorage.setItem('testDiagnostic', JSON.stringify(testData));
+                const retrievedSession = JSON.parse(sessionStorage.getItem('testDiagnostic'));
+
+                if (retrievedSession && retrievedSession.timestamp === testData.timestamp) {
+                    logToConsole('✅ sessionStorage funcionando corretamente', 'success');
+                    sessionStorage.removeItem('testDiagnostic');
+                } else {
+                    logToConsole('❌ sessionStorage com problemas', 'error');
+                }
+
+            } catch (error) {
+                logToConsole('❌ Erro no armazenamento: ' + error.message, 'error');
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ ATENÇÃO: Isso vai apagar TODOS os dados do site (usuários, jogos, etc.). Deseja continuar?')) {
+                try {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    logToConsole('🗑️ Todos os dados locais foram limpos', 'warning');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } catch (error) {
+                    logToConsole('❌ Erro ao limpar dados: ' + error.message, 'error');
+                }
+            }
+        }
+
+        function clearConsole() {
+            document.getElementById('consoleOutput').innerHTML = 'Console limpo...\n';
+        }
+
+        // Auto-start diagnostic on page load
+        window.addEventListener('load', () => {
+            logToConsole('🔧 Página de diagnóstico carregada', 'info');
+            setTimeout(() => {
+                logToConsole('🚀 Iniciando diagnóstico automático em 2 segundos...', 'info');
+                setTimeout(startFullDiagnostic, 2000);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

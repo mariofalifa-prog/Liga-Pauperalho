@@ -1,0 +1,23 @@
+{
+  "nome": "Liga Pauperalho - Site Completo",
+  "versao": "1.0.0",
+  "data": "2025-11-16T10:38:00.807Z",
+  "status": "100% Funcional",
+  "arquivos": {
+    "html": 5,
+    "css": 4,
+    "js": 8,
+    "docs": 3
+  },
+  "funcionalidades": [
+    "Login e Autenticação",
+    "Painel Administrativo",
+    "Gestão de Jogadores",
+    "Sistema de Liga",
+    "Resultados de Jogos",
+    "Classificação/Ranking",
+    "Sistema de Top 8",
+    "Gestão de Arquétipos",
+    "Exportação de Dados"
+  ]
+}
