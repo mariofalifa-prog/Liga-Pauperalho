@@ -223,16 +223,7 @@ class LigaApp {
     this.scrollToTop();
   }
 
-  // Handle registration route
-  handleRegistrationRoute() {
-    if (!authManager.requireAuth()) {
-      return;
-    }
-
-    this.showSection('registration');
-    leagueManager.updateRegistrationInfo();
-  }
-
+  
   // Handle rankings route
   handleRankingsRoute() {
     this.showSection('rankings');
