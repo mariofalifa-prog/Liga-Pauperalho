@@ -324,11 +324,10 @@ class LigaApp {
       case '3':
       case '4':
       case '5':
-      case '6':
         // Number keys for navigation
         if (e.ctrlKey || e.metaKey) {
           e.preventDefault();
-          const sections = ['home', 'registration', 'rankings', 'rules', 'decklists', 'statistics'];
+          const sections = ['home', 'rankings', 'rules', 'decklists', 'statistics'];
           const index = parseInt(e.key) - 1;
           if (sections[index]) {
             this.navigateToSection(sections[index]);
