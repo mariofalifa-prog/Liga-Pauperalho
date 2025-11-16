@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Admin - Liga Pauperalho</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .test-button {
+            background-color: #d4af37;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background-color: #f4e5a3;
+        }
+        .success {
+            color: #4caf50;
+        }
+        .error {
+            color: #f44336;
+        }
+        .console-output {
+            background-color: #000;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Teste do Sistema Administrativo</h1>
+
+        <div class="test-section">
+            <h2>Teste de Carregamento dos Módulos</h2>
+            <button class="test-button" onclick="testModuleLoading()">Testar Carregamento</button>
+            <div id="moduleTestResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Teste de Login Administrativo</h2>
+            <button class="test-button" onclick="testAdminLogin()">Criar Admin e Fazer Login</button>
+            <div id="loginTestResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Teste do Painel Admin</h2>
+            <button class="test-button" onclick="testAdminPanel()">Acessar Painel Admin</button>
+            <div id="panelTestResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Console de Erros</h2>
+            <div class="console-output" id="consoleOutput">Aguardando testes...</div>
+        </div>
+    </div>
+
+    <!-- Modal Container (necessário para o admin.js) -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-container" id="modalContainer">
+            <button class="modal-close" id="modalClose">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-content" id="modalContent">
+                <!-- Modal content will be inserted dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer">
+        <!-- Notifications will be inserted dynamically -->
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/utils.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/league.js"></script>
+    <script src="js/rankings.js"></script>
+    <script src="js/games.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        // Override console.log para capturar saída
+        const originalLog = console.log;
+        const originalError = console.error;
+        const consoleOutput = document.getElementById('consoleOutput');
+
+        function addToConsole(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const colorClass = type === 'error' ? 'error' : 'success';
+            consoleOutput.innerHTML += `<span class="${colorClass}">[${timestamp}] ${message}</span>\n`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole(args.join(' '), 'log');
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole('ERROR: ' + args.join(' '), 'error');
+        };
+
+        function updateResult(elementId, message, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = `<div class="${isSuccess ? 'success' : 'error'}">${message}</div>`;
+            }
+        }
+
+        function testModuleLoading() {
+            try {
+                const modules = ['Utils', 'dataManager', 'authManager', 'leagueManager', 'rankingsManager', 'gamesManager', 'adminManager', 'ligaApp'];
+                const results = [];
+
+                modules.forEach(moduleName => {
+                    try {
+                        const module = window[moduleName.toLowerCase()];
+                        if (module && typeof module === 'object') {
+                            results.push(`✓ ${moduleName} carregado`);
+                        } else {
+                            results.push(`✗ ${moduleName} não encontrado`);
+                        }
+                    } catch (e) {
+                        results.push(`✗ ${moduleName}: ${e.message}`);
+                    }
+                });
+
+                updateResult('moduleTestResult', results.join('<br>'), true);
+                console.log('Teste de módulos concluído:', results);
+
+            } catch (error) {
+                updateResult('moduleTestResult', `Erro: ${error.message}`, false);
+                console.error('Erro no teste de módulos:', error);
+            }
+        }
+
+        function testAdminLogin() {
+            try {
+                // Criar usuário admin se não existir
+                let adminUser = dataManager.getUserByEmail('admin@pauperalho.com');
+
+                if (!adminUser) {
+                    adminUser = dataManager.createUser({
+                        name: 'Administrador',
+                        email: 'admin@pauperalho.com',
+                        password: 'admin123',
+                        role: 'admin'
+                    });
+                    console.log('Usuário admin criado:', adminUser);
+                }
+
+                // Fazer login
+                const session = dataManager.createSession(adminUser.id, false);
+                sessionStorage.setItem('ligaSessionToken', session.token);
+
+                authManager.currentUser = adminUser;
+                authManager.sessionToken = session.token;
+                authManager.updateUI();
+
+                updateResult('loginTestResult', `Login admin realizado com sucesso! Usuário: ${adminUser.name}`, true);
+                console.log('Login admin realizado com sucesso');
+
+            } catch (error) {
+                updateResult('loginTestResult', `Erro no login: ${error.message}`, false);
+                console.error('Erro no login admin:', error);
+            }
+        }
+
+        function testAdminPanel() {
+            try {
+                if (!authManager.isAuthenticated()) {
+                    updateResult('panelTestResult', 'Faça login primeiro!', false);
+                    return;
+                }
+
+                if (!authManager.isAdmin()) {
+                    updateResult('panelTestResult', 'Usuário não é administrador!', false);
+                    return;
+                }
+
+                // Testar carregamento do painel admin
+                adminManager.loadAdminData();
+
+                updateResult('panelTestResult', 'Painel admin carregado com sucesso!', true);
+                console.log('Painel admin testado com sucesso');
+
+                // Abrir modal de teste
+                setTimeout(() => {
+                    ligaApp.showModal('Teste', '<p>Este é um modal de teste para verificar se o sistema está funcionando!</p>');
+                    setTimeout(() => {
+                        ligaApp.closeModal();
+                    }, 2000);
+                }, 1000);
+
+            } catch (error) {
+                updateResult('panelTestResult', `Erro no painel: ${error.message}`, false);
+                console.error('Erro no painel admin:', error);
+            }
+        }
+
+        // Teste automático ao carregar a página
+        window.addEventListener('load', () => {
+            console.log('Página de teste carregada');
+            setTimeout(() => {
+                testModuleLoading();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
