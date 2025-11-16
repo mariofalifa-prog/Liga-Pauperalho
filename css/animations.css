@@ -659,3 +659,287 @@
   animation: none !important;
   transition: none !important;
 }
+
+/* Modern Enhanced Animations */
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+.glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite alternate;
+}
+
+.neon-flicker {
+  animation: neonFlicker 3s ease-in-out infinite alternate;
+}
+
+.morph-animation {
+  animation: morph 8s ease-in-out infinite;
+}
+
+.gradient-shift {
+  animation: gradientShift 4s ease-in-out infinite;
+}
+
+.particle-float {
+  animation: particleFloat 10s linear infinite;
+}
+
+.magnetic-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.magnetic-hover:hover {
+  transform: translate3d(var(--mouse-x, 0), var(--mouse-y, 0), 0);
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 5px rgba(147, 51, 234, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.8), 0 0 30px rgba(147, 51, 234, 0.6);
+  }
+}
+
+@keyframes neonFlicker {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  75% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes morph {
+  0%, 100% {
+    border-radius: var(--border-radius-md);
+  }
+  25% {
+    border-radius: var(--border-radius-lg);
+  }
+  50% {
+    border-radius: var(--border-radius-xl);
+  }
+  75% {
+    border-radius: var(--border-radius-lg);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Parallax Effect */
+.parallax-slow {
+  animation: parallaxSlow 20s linear infinite;
+}
+
+.parallax-medium {
+  animation: parallaxMedium 15s linear infinite;
+}
+
+.parallax-fast {
+  animation: parallaxFast 10s linear infinite;
+}
+
+@keyframes parallaxSlow {
+  0% {
+    transform: translateX(0px);
+  }
+  100% {
+    transform: translateX(-100px);
+  }
+}
+
+@keyframes parallaxMedium {
+  0% {
+    transform: translateX(0px);
+  }
+  100% {
+    transform: translateX(-150px);
+  }
+}
+
+@keyframes parallaxFast {
+  0% {
+    transform: translateX(0px);
+  }
+  100% {
+    transform: translateX(-200px);
+  }
+}
+
+/* Loading States */
+.quantum-loader {
+  animation: quantumSpin 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+.dna-helix {
+  animation: dnaHelix 3s ease-in-out infinite;
+}
+
+.wave-loader {
+  animation: waveLoader 1.5s ease-in-out infinite;
+}
+
+@keyframes quantumSpin {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.2);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes dnaHelix {
+  0%, 100% {
+    transform: rotateY(0deg) rotateX(0deg);
+  }
+  25% {
+    transform: rotateY(90deg) rotateX(45deg);
+  }
+  50% {
+    transform: rotateY(180deg) rotateX(0deg);
+  }
+  75% {
+    transform: rotateY(270deg) rotateX(-45deg);
+  }
+}
+
+@keyframes waveLoader {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.5);
+  }
+}
+
+/* Interactive Elements */
+.elevate-on-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.elevate-on-hover:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.squeeze-on-click {
+  transition: transform 0.1s ease-in-out;
+}
+
+.squeeze-on-click:active {
+  transform: scale(0.95);
+}
+
+/* Background Animations */
+.animated-gradient-bg {
+  background: linear-gradient(270deg, #667eea, #764ba2, #f093fb, #f5576c);
+  background-size: 800% 800%;
+  animation: gradientBackground 15s ease infinite;
+}
+
+@keyframes gradientBackground {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Particle System */
+.particle {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  animation: particleAnimation 4s linear infinite;
+}
+
+.particle:nth-child(odd) {
+  animation-delay: -2s;
+}
+
+.particle:nth-child(even) {
+  animation-delay: -1s;
+}
+
+@keyframes particleAnimation {
+  0% {
+    transform: translateY(100vh) translateX(0) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(80vh) translateX(10px) scale(1);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(10vh) translateX(-10px) scale(1);
+  }
+  100% {
+    transform: translateY(-10vh) translateX(0) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Modern Loading Skeleton */
+.skeleton-loader {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeletonLoading 1.5s infinite;
+}
+
+@keyframes skeletonLoading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
