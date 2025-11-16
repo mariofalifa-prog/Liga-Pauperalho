@@ -10,6 +10,7 @@ class AdminManager {
     this.bindEvents();
     this.setupTabSwitching();
     this.loadAdminData();
+    this.updateFooterContent();
   }
 
   // Bind event listeners
