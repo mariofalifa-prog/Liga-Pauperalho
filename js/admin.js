@@ -84,6 +84,9 @@ class AdminManager {
       case 'games':
         this.loadGamesData();
         break;
+      case 'content':
+        this.loadContentData();
+        break;
       case 'export':
         this.loadExportData();
         break;
