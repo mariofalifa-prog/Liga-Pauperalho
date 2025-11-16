@@ -85,6 +85,9 @@ class AdminManager {
       case 'games':
         this.loadGamesData();
         break;
+      case 'top8':
+        this.loadTop8Data();
+        break;
       case 'archetypes':
         this.loadArchetypeData();
         break;
