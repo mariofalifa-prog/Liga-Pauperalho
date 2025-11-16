@@ -723,6 +723,269 @@ class AdminManager {
     return confirm(`${title}\n\n${message}`);
   }
 
+  // Load content management data
+  loadContentData() {
+    const contentTab = document.getElementById('contentTab');
+    if (!contentTab) return;
+
+    const contactInfo = dataManager.getContactInfo();
+    const usefulLinks = dataManager.getUsefulLinks();
+
+    const contentHTML = `
+      <div class="admin-controls card">
+        <h3>Informações de Contato</h3>
+        <form id="contactForm" class="admin-form">
+          <div class="form-group">
+            <label for="contactEmail">Email:</label>
+            <input type="email" id="contactEmail" name="email" value="${contactInfo.email || ''}" required>
+          </div>
+          <div class="form-group">
+            <label for="contactDiscord">Discord:</label>
+            <input type="text" id="contactDiscord" name="discord" value="${contactInfo.discord || ''}" required>
+          </div>
+          <button type="button" class="btn btn-primary" data-action="save-contact-info">
+            <i class="fas fa-save"></i> Salvar Contatos
+          </button>
+        </form>
+      </div>
+
+      <div class="admin-controls card">
+        <h3>Discord Integration</h3>
+        <form id="discordForm" class="admin-form">
+          <div class="form-group">
+            <label for="discordEnabled">Ativar Integração:</label>
+            <select id="discordEnabled" name="enabled">
+              <option value="true">Sim</option>
+              <option value="false">Não</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="discordWebhook">Webhook URL:</label>
+            <input type="url" id="discordWebhook" name="webhookUrl" placeholder="https://discord.com/api/webhooks/...">
+          </div>
+          <div class="form-group">
+            <label for="discordInvite">Convite do Servidor:</label>
+            <input type="url" id="discordInvite" name="inviteUrl" placeholder="https://discord.gg/...">
+          </div>
+        </form>
+      </div>
+
+      <div class="admin-controls card">
+        <h3>Links Úteis</h3>
+        <div class="links-header">
+          <button class="btn btn-primary" data-action="add-link">
+            <i class="fas fa-plus"></i> Adicionar Link
+          </button>
+        </div>
+        <div class="links-list" id="usefulLinksList">
+          ${this.renderLinksList(usefulLinks)}
+        </div>
+      </div>
+    `;
+
+    contentTab.innerHTML = contentHTML;
+    this.setupContentForms();
+  }
+
+  // Render links list
+  renderLinksList(links) {
+    if (links.length === 0) {
+      return '<p class="text-muted">Nenhum link útil cadastrado.</p>';
+    }
+
+    return links.map(link => `
+      <div class="link-item card" data-link-id="${link.id}">
+        <div class="link-content">
+          <h4><a href="${link.url}" target="_blank">${Utils.escapeHtml(link.title)}</a></h4>
+          <p>${Utils.escapeHtml(link.description)}</p>
+          <small>Adicionado em: ${Utils.formatDate(link.createdAt)}</small>
+        </div>
+        <div class="link-actions">
+          <button class="btn btn-sm btn-outline" data-action="edit-link" data-link-id="${link.id}">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="btn btn-sm btn-error" data-action="delete-link" data-link-id="${link.id}">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Setup content forms
+  setupContentForms() {
+    // Load current settings for Discord
+    const settings = dataManager.getSettings();
+    const discordEnabled = document.getElementById('discordEnabled');
+    const discordWebhook = document.getElementById('discordWebhook');
+    const discordInvite = document.getElementById('discordInvite');
+
+    if (discordEnabled) discordEnabled.value = settings.discord.enabled ? 'true' : 'false';
+    if (discordWebhook) discordWebhook.value = settings.discord.webhookUrl || '';
+    if (discordInvite) discordInvite.value = settings.discord.inviteUrl || '';
+  }
+
+  // Show add link modal
+  showAddLinkModal() {
+    const modalContent = `
+      <div class="modal-header">
+        <h2 class="modal-title">Adicionar Link Útil</h2>
+        <p class="modal-subtitle">Adicione um novo link para a seção de links úteis</p>
+      </div>
+      <div class="modal-body">
+        <form id="addLinkForm">
+          <div class="form-group">
+            <label for="linkTitle">Título:</label>
+            <input type="text" id="linkTitle" name="title" required>
+          </div>
+          <div class="form-group">
+            <label for="linkUrl">URL:</label>
+            <input type="url" id="linkUrl" name="url" required>
+          </div>
+          <div class="form-group">
+            <label for="linkDescription">Descrição:</label>
+            <textarea id="linkDescription" name="description" rows="3"></textarea>
+          </div>
+          <div class="form-footer">
+            <button type="button" class="btn btn-secondary" onclick="this.closest('.modal-overlay').classList.remove('active')">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Adicionar Link
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    this.showModal(modalContent);
+    this.bindLinkForm();
+  }
+
+  // Bind link form events
+  bindLinkForm() {
+    const form = document.getElementById('addLinkForm');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleAddLink(form);
+      });
+    }
+  }
+
+  // Handle add link
+  handleAddLink(form) {
+    const formData = new FormData(form);
+    const linkData = {
+      title: formData.get('title'),
+      url: formData.get('url'),
+      description: formData.get('description')
+    };
+
+    try {
+      const newLink = dataManager.addUsefulLink(linkData);
+      authManager.showNotification('Link Adicionado', 'Link útil adicionado com sucesso', 'success');
+      this.closeModal();
+      this.loadContentData();
+    } catch (error) {
+      authManager.showNotification('Erro', error.message, 'error');
+    }
+  }
+
+  // Edit link
+  editLink(linkId) {
+    const link = dataManager.getUsefulLinks().find(l => l.id === linkId);
+    if (!link) return;
+
+    const modalContent = `
+      <div class="modal-header">
+        <h2 class="modal-title">Editar Link Útil</h2>
+        <p class="modal-subtitle">Edite as informações do link</p>
+      </div>
+      <div class="modal-body">
+        <form id="editLinkForm">
+          <div class="form-group">
+            <label for="editLinkTitle">Título:</label>
+            <input type="text" id="editLinkTitle" name="title" value="${Utils.escapeHtml(link.title)}" required>
+          </div>
+          <div class="form-group">
+            <label for="editLinkUrl">URL:</label>
+            <input type="url" id="editLinkUrl" name="url" value="${Utils.escapeHtml(link.url)}" required>
+          </div>
+          <div class="form-group">
+            <label for="editLinkDescription">Descrição:</label>
+            <textarea id="editLinkDescription" name="description" rows="3">${Utils.escapeHtml(link.description)}</textarea>
+          </div>
+          <div class="form-footer">
+            <button type="button" class="btn btn-secondary" onclick="this.closest('.modal-overlay').classList.remove('active')">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Salvar Alterações
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    this.showModal(modalContent);
+
+    const form = document.getElementById('editLinkForm');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleEditLink(form, linkId);
+      });
+    }
+  }
+
+  // Handle edit link
+  handleEditLink(form, linkId) {
+    const formData = new FormData(form);
+    const updates = {
+      title: formData.get('title'),
+      url: formData.get('url'),
+      description: formData.get('description')
+    };
+
+    try {
+      dataManager.updateUsefulLink(linkId, updates);
+      authManager.showNotification('Link Atualizado', 'Link útil atualizado com sucesso', 'success');
+      this.closeModal();
+      this.loadContentData();
+    } catch (error) {
+      authManager.showNotification('Erro', error.message, 'error');
+    }
+  }
+
+  // Delete link
+  deleteLink(linkId) {
+    if (!this.confirmAction('Excluir Link', 'Tem certeza que deseja excluir este link útil?')) {
+      return;
+    }
+
+    try {
+      dataManager.removeUsefulLink(linkId);
+      authManager.showNotification('Link Excluído', 'Link útil excluído com sucesso', 'success');
+      this.loadContentData();
+    } catch (error) {
+      authManager.showNotification('Erro', error.message, 'error');
+    }
+  }
+
+  // Save contact info
+  saveContactInfo() {
+    const email = document.getElementById('contactEmail').value;
+    const discord = document.getElementById('contactDiscord').value;
+
+    try {
+      dataManager.updateContactInfo({ email, discord });
+      authManager.showNotification('Contatos Atualizados', 'Informações de contato atualizadas com sucesso', 'success');
+    } catch (error) {
+      authManager.showNotification('Erro', error.message, 'error');
+    }
+  }
+
   // Check if user has admin privileges
   requireAdmin() {
     if (!authManager.requireAdmin()) {
