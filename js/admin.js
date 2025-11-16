@@ -28,6 +28,9 @@ class AdminManager {
     // User management
     this.bindUserManagement();
 
+    // Content management
+    this.bindContentManagement();
+
     // Game validation
     this.bindGameValidation();
 
