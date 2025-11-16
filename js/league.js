@@ -238,8 +238,8 @@ class LeagueManager {
 
   // Update primary CTA based on status
   updatePrimaryCTA(status) {
-    const primaryCTA = document.getElementById('primaryCTA');
-    if (!primaryCTA) return;
+    const heroRegisterBtn = document.getElementById('heroRegisterBtn');
+    if (!heroRegisterBtn) return;
 
     const currentUser = authManager.getCurrentUser();
     const isRegistered = currentUser ? dataManager.getRegistration(currentUser.id) : null;
@@ -247,31 +247,31 @@ class LeagueManager {
     switch (status) {
       case 'registration':
         if (!currentUser) {
-          primaryCTA.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login para Inscrever-se';
-          primaryCTA.onclick = () => authManager.showLoginModal();
+          heroRegisterBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login para Inscrever-se';
+          heroRegisterBtn.onclick = () => authManager.showLoginModal();
         } else if (isRegistered) {
-          primaryCTA.innerHTML = '<i class="fas fa-trophy"></i> Ver Classificação';
-          primaryCTA.onclick = () => window.location.hash = '#rankings';
+          heroRegisterBtn.innerHTML = '<i class="fas fa-trophy"></i> Ver Classificação';
+          heroRegisterBtn.onclick = () => window.location.hash = '#rankings';
         } else {
-          primaryCTA.innerHTML = '<i class="fas fa-user-plus"></i> Inscrever-se';
-          primaryCTA.onclick = () => window.location.hash = '#registration';
+          heroRegisterBtn.innerHTML = '<i class="fas fa-user-plus"></i> Inscrever-se';
+          heroRegisterBtn.onclick = () => this.showHeroRegistrationForm();
         }
         break;
 
       case 'active':
       case 'completed':
-        primaryCTA.innerHTML = '<i class="fas fa-trophy"></i> Ver Classificação';
-        primaryCTA.onclick = () => window.location.hash = '#rankings';
+        heroRegisterBtn.innerHTML = '<i class="fas fa-trophy"></i> Ver Classificação';
+        heroRegisterBtn.onclick = () => window.location.hash = '#rankings';
         break;
 
       case 'upcoming':
-        primaryCTA.innerHTML = '<i class="fas fa-calendar"></i> Ver Calendário';
-        primaryCTA.onclick = () => window.location.hash = '#rules';
+        heroRegisterBtn.innerHTML = '<i class="fas fa-calendar"></i> Ver Calendário';
+        heroRegisterBtn.onclick = () => window.location.hash = '#rules';
         break;
 
       default:
-        primaryCTA.innerHTML = '<i class="fas fa-info"></i> Saiba Mais';
-        primaryCTA.onclick = () => window.location.hash = '#rules';
+        heroRegisterBtn.innerHTML = '<i class="fas fa-info"></i> Saiba Mais';
+        heroRegisterBtn.onclick = () => window.location.hash = '#rules';
     }
   }
 
