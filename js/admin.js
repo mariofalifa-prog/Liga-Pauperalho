@@ -383,6 +383,27 @@ class AdminManager {
     });
   }
 
+  // Bind content management events
+  bindContentManagement() {
+    document.addEventListener('click', (e) => {
+      if (e.target.matches('[data-action="add-link"]')) {
+        this.showAddLinkModal();
+      }
+
+      if (e.target.matches('[data-action="edit-link"]')) {
+        this.editLink(e.target.dataset.linkId);
+      }
+
+      if (e.target.matches('[data-action="delete-link"]')) {
+        this.deleteLink(e.target.dataset.linkId);
+      }
+
+      if (e.target.matches('[data-action="save-contact-info"]')) {
+        this.saveContactInfo();
+      }
+    });
+  }
+
   // Load users data
   loadUsersData() {
     const usersTable = document.getElementById('adminUsersTable');
