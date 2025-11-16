@@ -977,6 +977,493 @@ class AdminManager {
     }
   }
 
+  // Load archetype management data
+  loadArchetypeData() {
+    const archetypeTab = document.getElementById('archetypesTab');
+    const archetypes = dataManager.getAllDeckArchetypes();
+
+    if (!archetypeTab) return;
+
+    archetypeTab.innerHTML = `
+      <div class="admin-controls card">
+        <div class="section-header">
+          <h3>Gerenciamento de Arquétipos</h3>
+          <div class="section-actions">
+            <button class="btn btn-primary" id="addArchetypeBtn">
+              <i class="fas fa-plus"></i>
+              Novo Arquétipo
+            </button>
+            <button class="btn btn-outline" id="refreshArchetypesBtn">
+              <i class="fas fa-sync"></i>
+              Atualizar
+            </button>
+          </div>
+        </div>
+
+        <div class="archetype-filters">
+          <div class="filter-group">
+            <label for="archetypeSearch">Buscar:</label>
+            <input type="text" id="archetypeSearch" placeholder="Nome ou descrição...">
+          </div>
+          <div class="filter-group">
+            <label for="tierFilter">Tier:</label>
+            <select id="tierFilter">
+              <option value="">Todos</option>
+              <option value="Tier 1">Tier 1</option>
+              <option value="Tier 2">Tier 2</option>
+              <option value="Tier 3">Tier 3</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="colorFilter">Cor:</label>
+            <select id="colorFilter">
+              <option value="">Todas</option>
+              <option value="White">Branco</option>
+              <option value="Blue">Azul</option>
+              <option value="Black">Preto</option>
+              <option value="Red">Vermelho</option>
+              <option value="Green">Verde</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="archetype-stats">
+          <div class="stat-item">
+            <label>Total:</label>
+            <span>${archetypes.length}</span>
+          </div>
+          <div class="stat-item">
+            <label>Tier 1:</label>
+            <span>${dataManager.getDeckArchetypesByTier('Tier 1').length}</span>
+          </div>
+          <div class="stat-item">
+            <label>Tier 2:</label>
+            <span>${dataManager.getDeckArchetypesByTier('Tier 2').length}</span>
+          </div>
+          <div class="stat-item">
+            <label>Tier 3:</label>
+            <span>${dataManager.getDeckArchetypesByTier('Tier 3').length}</span>
+          </div>
+        </div>
+
+        <div class="archetype-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Cores</th>
+                <th>Tier</th>
+                <th>Descrição</th>
+                <th>Data</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="archetypesTableBody">
+              ${archetypes.map(archetype => this.renderArchetypeRow(archetype)).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    this.bindArchetypeEvents();
+  }
+
+  // Render archetype table row
+  renderArchetypeRow(archetype) {
+    const colorIcons = {
+      'White': '<i class="fas fa-circle" style="color: white;"></i>',
+      'Blue': '<i class="fas fa-circle" style="color: #0066cc;"></i>',
+      'Black': '<i class="fas fa-circle" style="color: black;"></i>',
+      'Red': '<i class="fas fa-circle" style="color: #cc0000;"></i>',
+      'Green': '<i class="fas fa-circle" style="color: #006600;"></i>'
+    };
+
+    const tierColors = {
+      'Tier 1': '#00aa00',
+      'Tier 2': '#ffaa00',
+      'Tier 3': '#cc0000'
+    };
+
+    const colorsHtml = archetype.colors.map(color => colorIcons[color] || color).join(' ');
+    const tierColor = tierColors[archetype.metaTier] || '#999';
+
+    return `
+      <tr data-archetype-id="${archetype.id}">
+        <td>
+          <strong>${Utils.escapeHtml(archetype.name)}</strong>
+        </td>
+        <td>${colorsHtml}</td>
+        <td>
+          <span class="tier-badge" style="background-color: ${tierColor}; color: white;">
+            ${Utils.escapeHtml(archetype.metaTier)}
+          </span>
+        </td>
+        <td>
+          <span title="${Utils.escapeHtml(archetype.description)}">
+            ${Utils.escapeHtml(archetype.description.length > 50 ?
+              archetype.description.substring(0, 50) + '...' :
+              archetype.description)}
+          </span>
+        </td>
+        <td>${Utils.formatDateOnly(new Date(archetype.createdAt))}</td>
+        <td>
+          <div class="table-actions">
+            <button class="btn btn-small btn-outline edit-archetype" data-id="${archetype.id}" title="Editar">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-small btn-danger delete-archetype" data-id="${archetype.id}" title="Excluir">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }
+
+  // Bind archetype management events
+  bindArchetypeEvents() {
+    // Add archetype button
+    const addArchetypeBtn = document.getElementById('addArchetypeBtn');
+    if (addArchetypeBtn) {
+      addArchetypeBtn.addEventListener('click', () => this.showAddArchetypeModal());
+    }
+
+    // Refresh archetypes button
+    const refreshArchetypesBtn = document.getElementById('refreshArchetypesBtn');
+    if (refreshArchetypesBtn) {
+      refreshArchetypesBtn.addEventListener('click', () => this.loadArchetypeData());
+    }
+
+    // Edit archetype buttons
+    const editButtons = document.querySelectorAll('.edit-archetype');
+    editButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const archetypeId = e.currentTarget.dataset.id;
+        this.editArchetype(archetypeId);
+      });
+    });
+
+    // Delete archetype buttons
+    const deleteButtons = document.querySelectorAll('.delete-archetype');
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const archetypeId = e.currentTarget.dataset.id;
+        this.deleteArchetype(archetypeId);
+      });
+    });
+
+    // Filter events
+    const archetypeSearch = document.getElementById('archetypeSearch');
+    const tierFilter = document.getElementById('tierFilter');
+    const colorFilter = document.getElementById('colorFilter');
+
+    const filterArchetypes = () => {
+      const searchTerm = archetypeSearch.value.toLowerCase();
+      const tierValue = tierFilter.value;
+      const colorValue = colorFilter.value;
+
+      const rows = document.querySelectorAll('#archetypesTableBody tr');
+      rows.forEach(row => {
+        const name = row.querySelector('td:first-child strong').textContent.toLowerCase();
+        const tier = row.querySelector('.tier-badge').textContent;
+        const colors = Array.from(row.querySelectorAll('.fa-circle')).map(icon => {
+          const style = icon.getAttribute('style');
+          if (style.includes('white')) return 'White';
+          if (style.includes('#0066cc')) return 'Blue';
+          if (style.includes('black')) return 'Black';
+          if (style.includes('#cc0000')) return 'Red';
+          if (style.includes('#006600')) return 'Green';
+          return '';
+        });
+
+        const matchesSearch = name.includes(searchTerm);
+        const matchesTier = !tierValue || tier === tierValue;
+        const matchesColor = !colorValue || colors.includes(colorValue);
+
+        row.style.display = matchesSearch && matchesTier && matchesColor ? '' : 'none';
+      });
+    };
+
+    if (archetypeSearch) archetypeSearch.addEventListener('input', filterArchetypes);
+    if (tierFilter) tierFilter.addEventListener('change', filterArchetypes);
+    if (colorFilter) colorFilter.addEventListener('change', filterArchetypes);
+  }
+
+  // Show add archetype modal
+  showAddArchetypeModal() {
+    const modalHTML = `
+      <div class="archetype-form-container">
+        <div class="form-header">
+          <i class="fas fa-cards"></i>
+          <h3>Novo Arquétipo de Deck</h3>
+          <p>Adicione um novo arquétipo para a liga</p>
+        </div>
+        <form id="archetypeForm" class="auth-form">
+          <div class="form-group">
+            <label for="archetypeName">Nome do Arquétipo *</label>
+            <input type="text" id="archetypeName" name="name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="archetypeDescription">Descrição</label>
+            <textarea id="archetypeDescription" name="description" rows="3" placeholder="Descrição do arquétipo..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Cores do Deck</label>
+            <div class="color-checkboxes">
+              <label class="checkbox-label">
+                <input type="checkbox" name="colors" value="White">
+                <i class="fas fa-circle" style="color: white;"></i> Branco
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="colors" value="Blue">
+                <i class="fas fa-circle" style="color: #0066cc;"></i> Azul
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="colors" value="Black">
+                <i class="fas fa-circle" style="color: black;"></i> Preto
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="colors" value="Red">
+                <i class="fas fa-circle" style="color: #cc0000;"></i> Vermelho
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="colors" value="Green">
+                <i class="fas fa-circle" style="color: #006600;"></i> Verde
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="archetypeTier">Tier Meta</label>
+            <select id="archetypeTier" name="metaTier">
+              <option value="Tier 1">Tier 1 (Meta Dominante)</option>
+              <option value="Tier 2">Tier 2 (Competitivo)</option>
+              <option value="Tier 3">Tier 3 (Regional/Nicho)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="archetypeSampleList">Lista de Exemplo (Opcional)</label>
+            <textarea id="archetypeSampleList" name="sampleList" rows="6" placeholder="Exemplo de lista do deck..."></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i>
+              Salvar Arquétipo
+            </button>
+            <button type="button" class="btn btn-outline" onclick="app.closeModal()">
+              <i class="fas fa-times"></i>
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    app.showModal('Novo Arquétipo', modalHTML);
+    this.bindArchetypeFormEvents();
+  }
+
+  // Bind archetype form events
+  bindArchetypeFormEvents() {
+    const form = document.getElementById('archetypeForm');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.saveArchetype();
+      });
+    }
+  }
+
+  // Save archetype
+  saveArchetype() {
+    const form = document.getElementById('archetypeForm');
+    const formData = new FormData(form);
+
+    // Get selected colors
+    const colors = Array.from(form.querySelectorAll('input[name="colors"]:checked'))
+      .map(cb => cb.value);
+
+    const archetypeData = {
+      name: formData.get('name'),
+      description: formData.get('description'),
+      colors: colors,
+      metaTier: formData.get('metaTier'),
+      sampleList: formData.get('sampleList')
+    };
+
+    try {
+      dataManager.addDeckArchetype(archetypeData);
+      authManager.showNotification('Sucesso', 'Arquétipo adicionado com sucesso!', 'success');
+      app.closeModal();
+      this.loadArchetypeData();
+    } catch (error) {
+      authManager.showNotification('Erro', error.message, 'error');
+    }
+  }
+
+  // Edit archetype
+  editArchetype(archetypeId) {
+    const archetype = dataManager.getDeckArchetype(archetypeId);
+    if (!archetype) {
+      authManager.showNotification('Erro', 'Arquétipo não encontrado', 'error');
+      return;
+    }
+
+    const modalHTML = `
+      <div class="archetype-form-container">
+        <div class="form-header">
+          <i class="fas fa-cards"></i>
+          <h3>Editar Arquétipo</h3>
+          <p>Edite as informações do arquétipo</p>
+        </div>
+        <form id="archetypeForm" class="auth-form">
+          <input type="hidden" id="archetypeId" value="${archetype.id}">
+
+          <div class="form-group">
+            <label for="archetypeName">Nome do Arquétipo *</label>
+            <input type="text" id="archetypeName" name="name" value="${Utils.escapeHtml(archetype.name)}" required>
+          </div>
+
+          <div class="form-group">
+            <label for="archetypeDescription">Descrição</label>
+            <textarea id="archetypeDescription" name="description" rows="3">${Utils.escapeHtml(archetype.description)}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Cores do Deck</label>
+            <div class="color-checkboxes">
+              <label class="checkbox-label">
+                <input type="checkbox" name="colors" value="White" ${archetype.colors.includes('White') ? 'checked' : ''}>
+                <i class="fas fa-circle" style="color: white;"></i> Branco
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="colors" value="Blue" ${archetype.colors.includes('Blue') ? 'checked' : ''}>
+                <i class="fas fa-circle" style="color: #0066cc;"></i> Azul
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="colors" value="Black" ${archetype.colors.includes('Black') ? 'checked' : ''}>
+                <i class="fas fa-circle" style="color: black;"></i> Preto
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="colors" value="Red" ${archetype.colors.includes('Red') ? 'checked' : ''}>
+                <i class="fas fa-circle" style="color: #cc0000;"></i> Vermelho
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="colors" value="Green" ${archetype.colors.includes('Green') ? 'checked' : ''}>
+                <i class="fas fa-circle" style="color: #006600;"></i> Verde
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="archetypeTier">Tier Meta</label>
+            <select id="archetypeTier" name="metaTier">
+              <option value="Tier 1" ${archetype.metaTier === 'Tier 1' ? 'selected' : ''}>Tier 1 (Meta Dominante)</option>
+              <option value="Tier 2" ${archetype.metaTier === 'Tier 2' ? 'selected' : ''}>Tier 2 (Competitivo)</option>
+              <option value="Tier 3" ${archetype.metaTier === 'Tier 3' ? 'selected' : ''}>Tier 3 (Regional/Nicho)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="archetypeSampleList">Lista de Exemplo (Opcional)</label>
+            <textarea id="archetypeSampleList" name="sampleList" rows="6">${Utils.escapeHtml(archetype.sampleList)}</textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i>
+              Atualizar Arquétipo
+            </button>
+            <button type="button" class="btn btn-outline" onclick="app.closeModal()">
+              <i class="fas fa-times"></i>
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    app.showModal('Editar Arquétipo', modalHTML);
+    this.bindArchetypeFormEvents();
+  }
+
+  // Update archetype (for edit form)
+  updateArchetype() {
+    const form = document.getElementById('archetypeForm');
+    const formData = new FormData(form);
+    const archetypeId = document.getElementById('archetypeId').value;
+
+    // Get selected colors
+    const colors = Array.from(form.querySelectorAll('input[name="colors"]:checked'))
+      .map(cb => cb.value);
+
+    const archetypeData = {
+      name: formData.get('name'),
+      description: formData.get('description'),
+      colors: colors,
+      metaTier: formData.get('metaTier'),
+      sampleList: formData.get('sampleList')
+    };
+
+    try {
+      dataManager.updateDeckArchetype(archetypeId, archetypeData);
+      authManager.showNotification('Sucesso', 'Arquétipo atualizado com sucesso!', 'success');
+      app.closeModal();
+      this.loadArchetypeData();
+    } catch (error) {
+      authManager.showNotification('Erro', error.message, 'error');
+    }
+  }
+
+  // Delete archetype
+  deleteArchetype(archetypeId) {
+    const archetype = dataManager.getDeckArchetype(archetypeId);
+    if (!archetype) return;
+
+    const modalHTML = `
+      <div class="delete-confirmation">
+        <div class="warning-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3>Confirmar Exclusão</h3>
+        <p>Tem certeza que deseja excluir o arquétipo <strong>${Utils.escapeHtml(archetype.name)}</strong>?</p>
+        <p class="warning-text">Esta ação não pode ser desfeita.</p>
+        <div class="form-actions">
+          <button class="btn btn-danger" onclick="this.closest('.delete-confirmation').dataset.confirm = 'true'; app.closeModal(); admin.deleteArchetypeConfirm('${archetypeId}');">
+            <i class="fas fa-trash"></i>
+            Excluir
+          </button>
+          <button class="btn btn-outline" onclick="app.closeModal();">
+            <i class="fas fa-times"></i>
+            Cancelar
+          </button>
+        </div>
+      </div>
+    `;
+
+    app.showModal('Excluir Arquétipo', modalHTML);
+  }
+
+  // Confirm archetype deletion
+  deleteArchetypeConfirm(archetypeId) {
+    try {
+      const deletedArchetype = dataManager.deleteDeckArchetype(archetypeId);
+      authManager.showNotification(
+        'Sucesso',
+        `Arquétipo "${deletedArchetype.name}" excluído com sucesso!`,
+        'success'
+      );
+      this.loadArchetypeData();
+    } catch (error) {
+      authManager.showNotification('Erro', error.message, 'error');
+    }
+  }
+
   // Save contact info
   saveContactInfo() {
     const email = document.getElementById('contactEmail').value;
