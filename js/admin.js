@@ -981,8 +981,32 @@ class AdminManager {
     try {
       dataManager.updateContactInfo({ email, discord });
       authManager.showNotification('Contatos Atualizados', 'Informações de contato atualizadas com sucesso', 'success');
+      this.updateFooterContent();
     } catch (error) {
       authManager.showNotification('Erro', error.message, 'error');
+    }
+  }
+
+  // Update footer content dynamically
+  updateFooterContent() {
+    const contactInfo = dataManager.getContactInfo();
+    const usefulLinks = dataManager.getUsefulLinks();
+
+    // Update footer contact section
+    const footerContact = document.getElementById('footerContact');
+    if (footerContact) {
+      footerContact.innerHTML = `
+        <p>Discord: ${contactInfo.discord || 'Liga Pauperalho'}</p>
+        <p>Email: ${contactInfo.email || 'contato@pauperalho.com'}</p>
+      `;
+    }
+
+    // Update footer links section
+    const footerLinks = document.getElementById('footerUsefulLinks');
+    if (footerLinks && usefulLinks.length > 0) {
+      footerLinks.innerHTML = usefulLinks.map(link =>
+        `<li><a href="${link.url}" target="_blank">${Utils.escapeHtml(link.title)}</a></li>`
+      ).join('');
     }
   }
 
