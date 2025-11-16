@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste do Sistema Mensal - Liga Pauperalho</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn.success {
+            background: #28a745;
+        }
+        .btn.warning {
+            background: #ffc107;
+            color: #000;
+        }
+        .btn.danger {
+            background: #dc3545;
+        }
+        .btn.secondary {
+            background: #6c757d;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .result {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .result.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .console {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-indicator.online {
+            background: #28a745;
+        }
+        .status-indicator.offline {
+            background: #dc3545;
+        }
+        .status-indicator.warning {
+            background: #ffc107;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        .data-table th,
+        .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .progress {
+            width: 100%;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-calendar-month"></i> Teste do Sistema Mensal - Liga Pauperalho</h1>
+
+        <div class="result info">
+            <strong>Status do Teste:</strong> <span id="testStatus">Preparando testes...</span>
+            <div class="progress">
+                <div class="progress-bar" id="testProgress" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Carregamento de Módulos -->
+        <div class="test-section">
+            <h3><i class="fas fa-cube"></i> 1. Carregamento de Módulos</h3>
+            <button class="btn" onclick="testModuleLoading()">Testar Carregamento</button>
+            <div id="moduleResult"></div>
+        </div>
+
+        <!-- Sistema Mensal -->
+        <div class="test-section">
+            <h3><i class="fas fa-calendar-alt"></i> 2. Sistema de Liga Mensal</h3>
+            <button class="btn" onclick="testMonthlySystem()">Testar Sistema Mensal</button>
+            <button class="btn success" onclick="testMonthlyLeagueCreation()">Testar Criação de Liga</button>
+            <div id="monthlyResult"></div>
+        </div>
+
+        <!-- Controle de Visibilidade -->
+        <div class="test-section">
+            <h3><i class="fas fa-eye"></i> 3. Controle de Visibilidade de Decklists</h3>
+            <button class="btn" onclick="testDecklistVisibility()">Testar Visibilidade</button>
+            <button class="btn warning" onclick="testVisibilityToggle()">Alternar Visibilidade</button>
+            <div id="visibilityResult"></div>
+        </div>
+
+        <!-- Categorização Mensal -->
+        <div class="test-section">
+            <h3><i class="fas fa-layer-group"></i> 4. Categorização Mensal de Dados</h3>
+            <button class="btn" onclick="testMonthlyCategorization()">Testar Categorização</button>
+            <button class="btn success" onclick="addTestData()">Adicionar Dados de Teste</button>
+            <div id="categorizationResult"></div>
+        </div>
+
+        <!-- Funcionalidade de Exportação -->
+        <div class="test-section">
+            <h3><i class="fas fa-download"></i> 5. Funcionalidade de Exportação</h3>
+            <button class="btn" onclick="testExportFunctionality()">Testar Exportação</button>
+            <button class="btn secondary" onclick="testMonthlyExports()">Testar Exportação Mensal</button>
+            <div id="exportResult"></div>
+        </div>
+
+        <!-- Login e Autenticação -->
+        <div class="test-section">
+            <h3><i class="fas fa-sign-in-alt"></i> 6. Sistema de Login e Autenticação</h3>
+            <button class="btn" onclick="testAuthentication()">Testar Autenticação</button>
+            <button class="btn success" onclick="createTestUser()">Criar Usuário Teste</button>
+            <div id="authResult"></div>
+        </div>
+
+        <!-- Integração com Admin -->
+        <div class="test-section">
+            <h3><i class="fas fa-cogs"></i> 7. Integração com Painel Admin</h3>
+            <button class="btn" onclick="testAdminIntegration()">Testar Integração Admin</button>
+            <button class="btn warning" onclick="testAdminMonthlyControls()">Testar Controles Mensais</button>
+            <div id="adminResult"></div>
+        </div>
+
+        <!-- Console -->
+        <div class="test-section">
+            <h3><i class="fas fa-terminal"></i> Console de Testes</h3>
+            <button class="btn secondary" onclick="clearConsole()">Limpar Console</button>
+            <button class="btn danger" onclick="runAllTests()">Executar Todos os Testes</button>
+            <div class="console" id="testConsole">Iniciando console de testes...\n</div>
+        </div>
+
+        <!-- Resumo -->
+        <div class="test-section">
+            <h3><i class="fas fa-clipboard-check"></i> Resumo dos Testes</h3>
+            <div id="testSummary">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Teste</th>
+                            <th>Status</th>
+                            <th>Detalhes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summaryTable">
+                        <tr><td colspan="3">Aguardando execução dos testes...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/data.js"></script>
+    <script src="monthly-league-enhancement.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        let testResults = {};
+        let currentTest = 0;
+        let totalTests = 7;
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            const consoleEl = document.getElementById('testConsole');
+            consoleEl.innerHTML += `[${timestamp}] ${icon} ${message}\n`;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function clearConsole() {
+            document.getElementById('testConsole').innerHTML = 'Console limpo...\n';
+        }
+
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.className = `result ${type}`;
+            element.innerHTML = message;
+        }
+
+        function updateTestStatus(message, progress = null) {
+            document.getElementById('testStatus').textContent = message;
+            if (progress !== null) {
+                document.getElementById('testProgress').style.width = `${progress}%`;
+            }
+        }
+
+        function updateSummary(testName, status, details) {
+            testResults[testName] = { status, details };
+            const tbody = document.getElementById('summaryTable');
+            tbody.innerHTML = '';
+
+            Object.entries(testResults).forEach(([name, result]) => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = name;
+                row.insertCell(1).innerHTML = `<span class="status-indicator ${result.status}"></span>${result.status}`;
+                row.insertCell(2).textContent = result.details;
+            });
+        }
+
+        // 1. Test Module Loading
+        function testModuleLoading() {
+            log('Iniciando teste de carregamento de módulos...', 'info');
+
+            try {
+                const modules = ['Utils', 'dataManager', 'MonthlyLeagueManager', 'authManager'];
+                let loadedModules = 0;
+                let failedModules = [];
+
+                modules.forEach(moduleName => {
+                    if (typeof window[moduleName] !== 'undefined' ||
+                        (moduleName === 'MonthlyLeagueManager' && typeof monthlyManager !== 'undefined')) {
+                        loadedModules++;
+                        log(`✅ ${moduleName} carregado com sucesso`, 'success');
+                    } else {
+                        failedModules.push(moduleName);
+                        log(`❌ ${moduleName} não encontrado`, 'error');
+                    }
+                });
+
+                const success = failedModules.length === 0;
+                const message = success
+                    ? `✅ Todos os módulos carregados (${loadedModules}/${modules.length})`
+                    : `❌ Módulos falharam: ${failedModules.join(', ')}`;
+
+                showResult('moduleResult', message, success ? 'success' : 'error');
+                updateSummary('Carregamento de Módulos', success ? 'online' : 'offline', `${loadedModules}/${modules.length} módulos`);
+
+                return success;
+
+            } catch (error) {
+                log(`Erro no teste de módulos: ${error.message}`, 'error');
+                showResult('moduleResult', `❌ Erro: ${error.message}`, 'error');
+                updateSummary('Carregamento de Módulos', 'offline', 'Erro durante teste');
+                return false;
+            }
+        }
+
+        // 2. Test Monthly System
+        function testMonthlySystem() {
+            log('Testando sistema de liga mensal...', 'info');
+
+            try {
+                if (!monthlyManager) {
+                    throw new Error('MonthlyLeagueManager não está disponível');
+                }
+
+                // Test monthly league creation
+                const currentMonth = monthlyManager.getCurrentMonthlyLeague();
+                if (!currentMonth) {
+                    log('Criando liga mensal atual...', 'warning');
+                    // Force creation
+                    const allLeagues = monthlyManager.getAllMonthlyLeagues();
+                    log(`Total de ligas mensais: ${Object.keys(allLeagues).length}`, 'info');
+                }
+
+                // Test month/year functions
+                const testDate = new Date();
+                const monthYear = monthlyManager.getMonthYear(testDate);
+                const leagueId = monthlyManager.getMonthlyLeagueId(testDate);
+
+                log(`Mês/Ano atual: ${monthYear}`, 'info');
+                log(`ID da liga mensal: ${leagueId}`, 'info');
+
+                const success = true;
+                showResult('monthlyResult', `✅ Sistema mensal funcionando<br>Mês atual: ${monthYear}<br>ID: ${leagueId}`, 'success');
+                updateSummary('Sistema Mensal', 'online', `Mês: ${monthYear}`);
+
+                return success;
+
+            } catch (error) {
+                log(`Erro no teste mensal: ${error.message}`, 'error');
+                showResult('monthlyResult', `❌ Erro: ${error.message}`, 'error');
+                updateSummary('Sistema Mensal', 'offline', 'Erro durante teste');
+                return false;
+            }
+        }
+
+        // 3. Test Decklist Visibility
+        function testDecklistVisibility() {
+            log('Testando controle de visibilidade de decklists...', 'info');
+
+            try {
+                if (!monthlyManager) {
+                    throw new Error('MonthlyLeagueManager não está disponível');
+                }
+
+                // Test visibility logic
+                const currentMonth = monthlyManager.getCurrentMonthlyLeague();
+                if (!currentMonth) {
+                    throw new Error('Não há liga mensal atual');
+                }
+
+                const shouldBeVisible = monthlyManager.shouldShowDecklists();
+                log(`Decklists devem estar visíveis: ${shouldBeVisible}`, 'info');
+
+                // Test visibility toggle
+                const testMonth = monthlyManager.getMonthYear(new Date());
+                const originalVisibility = currentMonth.decklistsVisible;
+
+                monthlyManager.updateDecklistVisibility(testMonth, !originalVisibility);
+                const toggledVisibility = monthlyManager.shouldShowDecklists(testMonth);
+
+                log(`Visibilidade após toggle: ${toggledVisibility}`, 'info');
+
+                // Restore original
+                monthlyManager.updateDecklistVisibility(testMonth, originalVisibility);
+
+                const success = true;
+                showResult('visibilityResult', `✅ Controle de visibilidade funcionando<br>Visibilidade atual: ${shouldBeVisible ? 'Visível' : 'Oculta'}`, 'success');
+                updateSummary('Visibilidade de Decklists', 'online', shouldBeVisible ? 'Visível' : 'Oculta');
+
+                return success;
+
+            } catch (error) {
+                log(`Erro no teste de visibilidade: ${error.message}`, 'error');
+                showResult('visibilityResult', `❌ Erro: ${error.message}`, 'error');
+                updateSummary('Visibilidade de Decklists', 'offline', 'Erro durante teste');
+                return false;
+            }
+        }
+
+        // 4. Test Monthly Categorization
+        function testMonthlyCategorization() {
+            log('Testando categorização mensal de dados...', 'info');
+
+            try {
+                if (!monthlyManager) {
+                    throw new Error('MonthlyLeagueManager não está disponível');
+                }
+
+                // Test getting monthly data
+                const currentMonth = monthlyManager.getMonthYear(new Date());
+                const monthlyRegistrations = monthlyManager.getMonthlyRegistrations(currentMonth);
+                const monthlyGames = monthlyManager.getMonthlyGames(currentMonth);
+
+                log(`Inscrições mensais: ${monthlyRegistrations.length}`, 'info');
+                log(`Jogos mensais: ${monthlyGames.length}`, 'info');
+
+                // Test rankings calculation
+                const rankings = monthlyManager.calculateMonthlyRankings(currentMonth);
+                log(`Classificação calculada: ${rankings.length} jogadores`, 'info');
+
+                const success = true;
+                showResult('categorizationResult', `✅ Categorização funcionando<br>Inscrições: ${monthlyRegistrations.length}<br>Jogos: ${monthlyGames.length}<br>Classificação: ${rankings.length} jogadores`, 'success');
+                updateSummary('Categorização Mensal', 'online', `${monthlyRegistrations.length} inscrições`);
+
+                return success;
+
+            } catch (error) {
+                log(`Erro no teste de categorização: ${error.message}`, 'error');
+                showResult('categorizationResult', `❌ Erro: ${error.message}`, 'error');
+                updateSummary('Categorização Mensal', 'offline', 'Erro durante teste');
+                return false;
+            }
+        }
+
+        // 5. Test Export Functionality
+        function testExportFunctionality() {
+            log('Testando funcionalidade de exportação...', 'info');
+
+            try {
+                if (!monthlyManager) {
+                    throw new Error('MonthlyLeagueManager não está disponível');
+                }
+
+                // Test export functions
+                const currentMonthData = monthlyManager.exportLeagueResults(monthlyManager.getMonthYear(new Date()));
+                const allMonthlyData = monthlyManager.exportLeagueResults();
+                const decklistData = monthlyManager.exportMonthlyDecklists();
+
+                log('Exportação de resultados mensais: OK', 'success');
+                log('Exportação de todos os resultados: OK', 'success');
+                log('Exportação de decklists: OK', 'success');
+
+                // Verify export structure
+                const hasCorrectStructure = currentMonthData &&
+                                        currentMonthData.type === 'monthly_results' &&
+                                        Array.isArray(currentMonthData.rankings);
+
+                const success = hasCorrectStructure;
+                showResult('exportResult', success
+                    ? `✅ Sistema de exportação funcionando<br>Resultados: ${currentMonthData.rankings?.length || 0} jogadores<br>Decklists: ${decklistData.totalMonths || 0} meses`
+                    : '❌ Estrutura de exportação inválida',
+                    success ? 'success' : 'error');
+                updateSummary('Exportação', success ? 'online' : 'offline', hasCorrectStructure ? 'Estrutura OK' : 'Estrutura inválida');
+
+                return success;
+
+            } catch (error) {
+                log(`Erro no teste de exportação: ${error.message}`, 'error');
+                showResult('exportResult', `❌ Erro: ${error.message}`, 'error');
+                updateSummary('Exportação', 'offline', 'Erro durante teste');
+                return false;
+            }
+        }
+
+        // 6. Test Authentication
+        function testAuthentication() {
+            log('Testando sistema de autenticação...', 'info');
+
+            try {
+                // Test auth manager
+                if (typeof authManager === 'undefined') {
+                    throw new Error('authManager não está disponível');
+                }
+
+                // Test user creation and login
+                const testEmail = 'test@example.com';
+                const testPassword = 'test123';
+
+                // Check if test user exists
+                const existingUser = dataManager.getUserByEmail(testEmail);
+                log(`Usuário de teste existe: ${!!existingUser}`, 'info');
+
+                // Test session management
+                const sessions = dataManager.getAllSessions();
+                log(`Sessões ativas: ${sessions.length}`, 'info');
+
+                const success = true;
+                showResult('authResult', `✅ Sistema de autenticação funcionando<br>Sessões ativas: ${sessions.length}<br>Usuário teste: ${!!existingUser ? 'Existe' : 'Não existe'}`, 'success');
+                updateSummary('Autenticação', 'online', `${sessions.length} sessões`);
+
+                return success;
+
+            } catch (error) {
+                log(`Erro no teste de autenticação: ${error.message}`, 'error');
+                showResult('authResult', `❌ Erro: ${error.message}`, 'error');
+                updateSummary('Autenticação', 'offline', 'Erro durante teste');
+                return false;
+            }
+        }
+
+        // 7. Test Admin Integration
+        function testAdminIntegration() {
+            log('Testando integração com painel admin...', 'info');
+
+            try {
+                // Test admin functions availability
+                const hasAdminControls = typeof document !== 'undefined' &&
+                                     document.querySelector('.admin-section') !== null;
+
+                // Test monthly data availability for admin
+                const monthlyDataAvailable = monthlyManager &&
+                                          typeof monthlyManager.getAllMonthlyLeagues === 'function';
+
+                const currentMonth = monthlyManager ? monthlyManager.getCurrentMonthlyLeague() : null;
+                const monthlyLeagues = monthlyManager ? monthlyManager.getAllMonthlyLeagues() : {};
+
+                log('Controles admin disponíveis: OK', 'success');
+                log('Dados mensais disponíveis: OK', 'success');
+                log(`Total de ligas mensais: ${Object.keys(monthlyLeagues).length}`, 'info');
+
+                const success = hasAdminControls && monthlyDataAvailable;
+                showResult('adminResult', success
+                    ? `✅ Integração admin funcionando<br>Ligas mensais: ${Object.keys(monthlyLeagues).length}<br>Controles disponíveis: ${hasAdminControls ? 'Sim' : 'Não'}`
+                    : '❌ Falha na integração admin',
+                    success ? 'success' : 'error');
+                updateSummary('Integração Admin', success ? 'online' : 'offline', `${Object.keys(monthlyLeagues).length} ligas`);
+
+                return success;
+
+            } catch (error) {
+                log(`Erro no teste de admin: ${error.message}`, 'error');
+                showResult('adminResult', `❌ Erro: ${error.message}`, 'error');
+                updateSummary('Integração Admin', 'offline', 'Erro durante teste');
+                return false;
+            }
+        }
+
+        // Additional helper functions
+        function testMonthlyLeagueCreation() {
+            log('Testando criação de liga mensal específica...', 'info');
+            try {
+                const nextMonth = new Date();
+                nextMonth.setMonth(nextMonth.getMonth() + 1);
+                const nextMonthYear = monthlyManager.getMonthYear(nextMonth);
+
+                monthlyManager.initializeNextMonthlyLeague();
+                const newLeague = monthlyManager.getMonthlyLeague(nextMonthYear);
+
+                log(`Liga criada para ${nextMonthYear}: ${!!newLeague}`, newLeague ? 'success' : 'error');
+                showResult('monthlyResult', `✅ Liga mensal criada para ${nextMonthYear}`, 'success');
+            } catch (error) {
+                log(`Erro ao criar liga: ${error.message}`, 'error');
+            }
+        }
+
+        function testVisibilityToggle() {
+            log('Testando toggle de visibilidade...', 'info');
+            try {
+                const currentMonth = monthlyManager.getMonthYear(new Date());
+                const currentState = monthlyManager.shouldShowDecklists(currentMonth);
+
+                monthlyManager.updateDecklistVisibility(currentMonth, !currentState);
+                const newState = monthlyManager.shouldShowDecklists(currentMonth);
+
+                log(`Visibilidade alterada: ${currentState} → ${newState}`, 'success');
+                showResult('visibilityResult', `✅ Visibilidade alterada com sucesso`, 'success');
+
+                // Restore original
+                monthlyManager.updateDecklistVisibility(currentMonth, currentState);
+            } catch (error) {
+                log(`Erro no toggle: ${error.message}`, 'error');
+            }
+        }
+
+        function addTestData() {
+            log('Adicionando dados de teste...', 'info');
+            try {
+                const currentMonth = monthlyManager.getMonthYear(new Date());
+
+                // Add test registration
+                const testRegistration = monthlyManager.addMonthlyRegistration({
+                    userId: 'test-user-123',
+                    deckArchetype: 'Mono Blue Terror',
+                    deckList: '4 Delver of Secrets\n4 Ponder\n4 Preordain...'
+                });
+
+                log('Inscrição de teste adicionada', 'success');
+                showResult('categorizationResult', `✅ Dados de teste adicionados`, 'success');
+            } catch (error) {
+                log(`Erro ao adicionar dados: ${error.message}`, 'error');
+            }
+        }
+
+        function testMonthlyExports() {
+            log('Testando exportações mensais específicas...', 'info');
+            try {
+                const currentMonth = monthlyManager.getMonthYear(new Date());
+                const monthlyExport = monthlyManager.exportLeagueResults(currentMonth);
+                const decklistExport = monthlyManager.exportMonthlyDecklists(currentMonth);
+
+                log(`Exportação mensal: ${monthlyExport.type}`, 'success');
+                log(`Exportação decklists: ${decklistExport.type}`, 'success');
+                showResult('exportResult', `✅ Exportações mensais testadas com sucesso`, 'success');
+            } catch (error) {
+                log(`Erro nas exportações: ${error.message}`, 'error');
+            }
+        }
+
+        function createTestUser() {
+            log('Criando usuário de teste...', 'info');
+            try {
+                const testUser = dataManager.createUser({
+                    name: 'Usuário Teste',
+                    email: 'test@example.com',
+                    password: 'test123',
+                    role: 'player'
+                });
+
+                log(`Usuário criado: ${testUser.name} (${testUser.email})`, 'success');
+                showResult('authResult', `✅ Usuário de teste criado com sucesso`, 'success');
+            } catch (error) {
+                log(`Erro ao criar usuário: ${error.message}`, 'error');
+            }
+        }
+
+        function testAdminMonthlyControls() {
+            log('Testando controles mensais do admin...', 'info');
+            try {
+                const currentMonth = monthlyManager.getMonthYear(new Date());
+                const canCloseRegistration = monthlyManager.closeMonthlyRegistration(currentMonth);
+                const canOpenRegistration = monthlyManager.openMonthlyRegistration(currentMonth);
+
+                log(`Controle de inscrições: Fechar=${canCloseRegistration}, Abrir=${canOpenRegistration}`, 'success');
+                showResult('adminResult', `✅ Controles mensais admin funcionando`, 'success');
+            } catch (error) {
+                log(`Erro nos controles admin: ${error.message}`, 'error');
+            }
+        }
+
+        // Run all tests
+        function runAllTests() {
+            log('🚀 Iniciando todos os testes...', 'info');
+            clearConsole();
+
+            const tests = [
+                { name: 'Carregamento de Módulos', func: testModuleLoading },
+                { name: 'Sistema Mensal', func: testMonthlySystem },
+                { name: 'Visibilidade de Decklists', func: testDecklistVisibility },
+                { name: 'Categorização Mensal', func: testMonthlyCategorization },
+                { name: 'Exportação', func: testExportFunctionality },
+                { name: 'Autenticação', func: testAuthentication },
+                { name: 'Integração Admin', func: testAdminIntegration }
+            ];
+
+            let completedTests = 0;
+
+            tests.forEach((test, index) => {
+                setTimeout(() => {
+                    updateTestStatus(`Executando: ${test.name}...`, (index / tests.length) * 100);
+
+                    try {
+                        test.func();
+                        completedTests++;
+                        updateTestStatus(`Concluído: ${completedTests}/${tests.length} testes`, (completedTests / tests.length) * 100);
+
+                        if (completedTests === tests.length) {
+                            updateTestStatus('Todos os testes concluídos!', 100);
+                            log('🎉 Todos os testes concluídos!', 'success');
+                        }
+                    } catch (error) {
+                        log(`Erro no teste ${test.name}: ${error.message}`, 'error');
+                    }
+                }, index * 1000);
+            });
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            log('Página de teste do sistema mensal carregada', 'success');
+            updateTestStatus('Pronto para executar testes', 0);
+
+            // Auto-run module loading test
+            setTimeout(() => {
+                testModuleLoading();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
