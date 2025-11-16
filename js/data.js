@@ -78,7 +78,42 @@ class DataManager {
       privacy: {
         publicRankings: true,
         publicDecklists: false
-      }
+      },
+      discord: {
+        enabled: true,
+        webhookUrl: '',
+        inviteUrl: 'https://discord.gg/pauperalho',
+        serverId: '',
+        botToken: '',
+        notifications: {
+          newRegistration: true,
+          gameResults: true,
+          leagueUpdates: true,
+          announcements: true
+        }
+      },
+      contactInfo: {
+        email: 'contato@pauperalho.com',
+        discord: 'Liga Pauperalho',
+        otherContacts: []
+      },
+      usefulLinks: [
+        {
+          title: 'Magic: The Gathering Official',
+          url: 'https://magic.wizards.com/',
+          description: 'Site oficial de Magic: The Gathering'
+        },
+        {
+          title: 'Pauper Rules',
+          url: 'https://magic.wizards.com/en/formats/pauper',
+          description: 'Regras oficiais do formato Pauper'
+        },
+        {
+          title: 'MTG Online',
+          url: 'https://www.magicthegathering.com/mtgo',
+          description: 'Jogue Magic online'
+        }
+      ]
     };
   }
 
