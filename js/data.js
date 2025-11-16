@@ -114,6 +114,108 @@ class DataManager {
           description: 'Jogue Magic online'
         }
       ],
+      rules: [
+        {
+          id: 'rule-001',
+          title: 'Formato Pauper',
+          content: 'A liga será jogada no formato Pauper, onde apenas cartas de Comuns podem ser utilizadas.',
+          category: 'formato',
+          priority: 'high',
+          important: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'rule-002',
+          title: 'Estrutura da Liga',
+          content: 'Cada jogador poderá disputar até 4 partidas por mês. As partidas serão no melhor de 3 games (primeiro a vencer 2 games).',
+          category: 'estrutura',
+          priority: 'high',
+          important: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'rule-003',
+          title: 'Sistema de Pontuação',
+          content: 'Vitória: 3 pontos | Derrota: 0 pontos. Empates não são permitidos - se houver empate em games, jogue até que haja um vencedor.',
+          category: 'pontuacao',
+          priority: 'high',
+          important: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'rule-004',
+          title: 'Período de Inscrições',
+          content: 'As inscrições estarão abertas do dia 22 do mês anterior até o último dia do mês corrente. Novos jogadores podem inscrever-se a qualquer momento durante este período.',
+          category: 'inscricoes',
+          priority: 'medium',
+          important: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'rule-005',
+          title: 'Registro de Partidas',
+          content: 'Ambos os jogadores devem registrar o resultado da partida no sistema. O resultado precisa ser validado por um administrador ou pelo oponente.',
+          category: 'partidas',
+          priority: 'medium',
+          important: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'rule-006',
+          title: 'Confrontos Diretos',
+          content: 'Cada par de jogadores pode disputar apenas uma partida durante o mês. Verifique se já jogou contra seu oponente antes de iniciar a partida.',
+          category: 'partidas',
+          priority: 'medium',
+          important: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'rule-007',
+          title: 'Critérios de Desempate',
+          content: '1º - Pontuação total | 2º - Percentual de vitórias | 3º - Mais vitórias | 4º - Menos derrotas | 5º - Confronto direto',
+          category: 'desempate',
+          priority: 'medium',
+          important: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'rule-008',
+          title: 'Top 8 e Playoffs',
+          content: 'Ao final do mês, os 8 melhores jogadores participarão dos playoffs. Os playoffs serão em formato eliminatório, melhor de 3.',
+          category: 'playoffs',
+          priority: 'medium',
+          important: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'rule-009',
+          title: 'Comportamento Esportivo',
+          content: 'Mantenha um ambiente respeitoso e esportivo. Conduta tóxica, trapaça ou violação das regras pode resultar em desqualificação.',
+          category: 'conduta',
+          priority: 'high',
+          important: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'rule-010',
+          title: 'Comunicação e Suporte',
+          content: 'Para dúvidas, problemas ou sugestões, entre em contato através do Discord da liga ou fale com um administrador.',
+          category: 'suporte',
+          priority: 'low',
+          important: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ],
       deckArchetypes: [
         {
           id: 'mono-blue-terror',
