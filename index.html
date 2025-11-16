@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Liga Pauperalho - Liga online de Magic: The Gathering no formato Pauper">
+    <meta name="keywords" content="Magic, MTG, Pauper, Liga, Online, Torneio">
+    <meta name="author" content="Liga Pauperalho">
+
+    <title>Liga Pauperalho - Magic: The Gathering Pauper League</title>
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+    <!-- Fixed Header Navigation -->
+    <header class="header" id="header">
+        <div class="container">
+            <div class="header-content">
+                <!-- Logo -->
+                <div class="logo">
+                    <i class="fas fa-dragon"></i>
+                    <span>Liga Pauperalho</span>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="nav-menu" id="navMenu">
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#home" class="nav-link" data-section="home">
+                                <i class="fas fa-home"></i>
+                                <span>Home</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#registration" class="nav-link" data-section="registration">
+                                <i class="fas fa-user-plus"></i>
+                                <span>Inscrições</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#rankings" class="nav-link" data-section="rankings">
+                                <i class="fas fa-trophy"></i>
+                                <span>Classificação</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#rules" class="nav-link" data-section="rules">
+                                <i class="fas fa-book"></i>
+                                <span>Regras</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#decklists" class="nav-link" data-section="decklists">
+                                <i class="fas fa-cards"></i>
+                                <span>Decklists</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#statistics" class="nav-link" data-section="statistics">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Estatísticas</span>
+                            </a>
+                        </li>
+                        <li class="nav-item admin-only" style="display: none;">
+                            <a href="#admin" class="nav-link" data-section="admin">
+                                <i class="fas fa-cogs"></i>
+                                <span>Admin</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- User Account Area -->
+                <div class="user-area" id="userArea">
+                    <div class="auth-buttons" id="authButtons">
+                        <button class="btn btn-outline btn-small" id="loginBtn">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Login
+                        </button>
+                        <button class="btn btn-primary btn-small" id="registerBtn">
+                            <i class="fas fa-user-plus"></i>
+                            Cadastrar
+                        </button>
+                    </div>
+
+                    <div class="user-menu" id="userMenu" style="display: none;">
+                        <div class="user-info">
+                            <span class="user-name" id="userName">Usuário</span>
+                            <span class="user-role" id="userRole">Jogador</span>
+                        </div>
+                        <div class="user-dropdown">
+                            <button class="btn btn-outline btn-small" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Sair
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="hero-background">
+                <div class="hero-overlay"></div>
+            </div>
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title">
+                            <i class="fas fa-dragon"></i>
+                            Liga Pauperalho
+                        </h1>
+                        <p class="hero-subtitle">
+                            Magic: The Gathering - Format Pauper
+                        </p>
+                        <div class="hero-description">
+                            <p>Liga online competitiva com as melhores archetypes de Pauper.</p>
+                            <p>Jogue contra os melhores jogadores e conquiste o título de campeão!</p>
+                        </div>
+                    </div>
+
+                    <div class="hero-status">
+                        <div class="status-card" id="leagueStatus">
+                            <div class="status-indicator" id="statusIndicator">
+                                <i class="fas fa-circle"></i>
+                            </div>
+                            <div class="status-text">
+                                <h3 id="statusTitle">Carregando...</h3>
+                                <p id="statusDescription">Verificando status da liga</p>
+                            </div>
+                        </div>
+
+                        <div class="hero-actions">
+                            <button class="btn btn-primary btn-large" id="primaryCTA">
+                                <i class="fas fa-user-plus"></i>
+                                Inscrever-se
+                            </button>
+                            <button class="btn btn-secondary btn-large" id="secondaryCTA">
+                                <i class="fas fa-book"></i>
+                                Ver Regras
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Registration Section -->
+        <section class="section registration-section" id="registration" style="display: none;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-plus"></i>
+                        Inscrições da Liga
+                    </h2>
+                    <p class="section-subtitle">Inscreva-se na liga mensal e dispute com os melhores</p>
+                </div>
+
+                <div class="registration-content">
+                    <div class="registration-info card">
+                        <h3>Informações da Temporada</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Período de Inscrição:</label>
+                                <span id="registrationPeriod">22 do mês anterior - Último dia do mês</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Status:</label>
+                                <span class="status-badge" id="registrationStatus">Verificando...</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Jogos Máximos:</label>
+                                <span>4 jogos por jogador</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Pontuação:</label>
+                                <span>3 pontos por vitória</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="registration-form card" id="registrationFormCard">
+                        <h3>Formulário de Inscrição</h3>
+                        <form id="leagueRegistrationForm">
+                            <div class="form-group">
+                                <label for="playerName">Nome do Jogador:</label>
+                                <input type="text" id="playerName" name="playerName" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="deckArchetype">Arquétipo do Deck:</label>
+                                <select id="deckArchetype" name="deckArchetype" required>
+                                    <option value="">Selecione seu arquétipo</option>
+                                    <option value="Mono Blue Terror">Mono Blue Terror</option>
+                                    <option value="Mono Red Burn">Mono Red Burn</option>
+                                    <option value="Mono Black Control">Mono Black Control</option>
+                                    <option value="Mono Green Stompy">Mono Green Stompy</option>
+                                    <option value="Mono White Weenie">Mono White Weenie</option>
+                                    <option value="Boros Monarch">Boros Monarch</option>
+                                    <option value="Izzet Faeries">Izzet Faeries</option>
+                                    <option value="Dimir Control">Dimir Control</option>
+                                    <option value="Golgari Midrange">Golgari Midrange</option>
+                                    <option value="Azorius Affinity">Azorius Affinity</option>
+                                    <option value="Rakdos Goblins">Rakdos Goblins</option>
+                                    <option value="Simic Merfolk">Simic Merfolk</option>
+                                    <option value="Orzhov Midrange">Orzhov Midrange</option>
+                                    <option value="Jeskai Spells">Jeskai Spells</option>
+                                    <option value="Sultai Reanimator">Sultai Reanimator</option>
+                                    <option value="4-Color Control">4-Color Control</option>
+                                    <option value="5-Color Good Stuff">5-Color Good Stuff</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="deckList">Lista do Deck (opcional):</label>
+                                <textarea id="deckList" name="deckList" rows="6" placeholder="Cole aqui a lista do seu deck..."></textarea>
+                            </div>
+
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="agreeRules" name="agreeRules" required>
+                                <label for="agreeRules">Li e concordo com as regras da liga</label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-large">
+                                <i class="fas fa-check"></i>
+                                Confirmar Inscrição
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rankings Section -->
+        <section class="section rankings-section" id="rankings" style="display: none;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-trophy"></i>
+                        Classificação
+                    </h2>
+                    <p class="section-subtitle">Veja a posição dos jogadores na liga atual</p>
+                </div>
+
+                <div class="rankings-content">
+                    <div class="rankings-controls">
+                        <div class="view-toggle">
+                            <button class="btn btn-outline active" data-view="monthly">
+                                <i class="fas fa-calendar-month"></i>
+                                Mensal
+                            </button>
+                            <button class="btn btn-outline" data-view="annual">
+                                <i class="fas fa-calendar-year"></i>
+                                Anual
+                            </button>
+                        </div>
+
+                        <div class="export-buttons">
+                            <button class="btn btn-outline" id="exportRankings">
+                                <i class="fas fa-download"></i>
+                                Exportar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="rankings-table-container card">
+                        <table class="rankings-table" id="rankingsTable">
+                            <thead>
+                                <tr>
+                                    <th class="rank-col">#</th>
+                                    <th class="player-col">Jogador</th>
+                                    <th class="deck-col">Deck</th>
+                                    <th class="games-col">Jogos</th>
+                                    <th class="wins-col">Vitórias</th>
+                                    <th class="points-col">Pontos</th>
+                                    <th class="winrate-col">Win %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rankingsBody">
+                                <!-- Rankings will be populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rules Section -->
+        <section class="section rules-section" id="rules" style="display: none;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-book"></i>
+                        Regras da Liga
+                    </h2>
+                    <p class="section-subtitle">Conheça as regras e regulamentos da Liga Pauperalho</p>
+                </div>
+
+                <div class="rules-content">
+                    <div class="rule-section card">
+                        <h3><i class="fas fa-info-circle"></i> Sobre a Liga</h3>
+                        <p>A Liga Pauperalho é uma competição online de Magic: The Gathering no formato Pauper, onde jogadores disputam partidas ao longo do mês para conquistar o título de campeão.</p>
+                    </div>
+
+                    <div class="rule-section card">
+                        <h3><i class="fas fa-calendar"></i> Período de Inscrição</h3>
+                        <ul>
+                            <li>As inscrições abrem no dia <strong>22</strong> de cada mês.</li>
+                            <li>As inscrições encerram no <strong>último dia</strong> do mês.</li>
+                            <li>Não serão aceitas inscrições após o período.</li>
+                        </ul>
+                    </div>
+
+                    <div class="rule-section card">
+                        <h3><i class="fas fa-gamepad"></i> Formato e Regras</h3>
+                        <ul>
+                            <li><strong>Formato:</strong> Pauper (apenas cartas Common)</li>
+                            <li><strong>Deck:</strong> Mínimo de 60 cartas, sem sideboard obrigatório</li>
+                            <li><strong>Partidas:</strong> Best-of-3 (melhor de 3)</li>
+                            <li><strong>Plataforma:</strong> MTG Online ou Magic: The Gathering Arena</li>
+                        </ul>
+                    </div>
+
+                    <div class="rule-section card">
+                        <h3><i class="fas fa-trophy"></i> Sistema de Pontuação</h3>
+                        <ul>
+                            <li><strong>3 pontos</strong> por vitória</li>
+                            <li><strong>0 pontos</strong> por derrota</li>
+                            <li><strong>Máximo de 4 jogos</strong> por jogador na fase inicial</li>
+                            <li><strong>Empates</strong> não são permitidos (jogar até desempate)</li>
+                        </ul>
+                    </div>
+
+                    <div class="rule-section card">
+                        <h3><i class="fas fa-sort-amount-up"></i> Critérios de Desempate</h3>
+                        <ol>
+                            <li><strong>Porcentagem de Vitórias</strong></li>
+                            <li><strong>Confronto Direto</strong></li>
+                            <li><strong>Porcentagem de Vitórias dos Oponentes</strong></li>
+                            <li><strong>Força do Calendário</strong></li>
+                        </ol>
+                    </div>
+
+                    <div class="rule-section card">
+                        <h3><i class="fas fa-crown"></i> Torneio Final</h3>
+                        <ul>
+                            <li>Em <strong>dezembro</strong>, os melhores jogadores disputam o Torneio Final Pauperalho.</li>
+                            <li><strong>Top 8</strong> jogadores do ranking anual se classificam.</li>
+                            <li>O torneio é em formato <strong>Single-Elimination</strong>.</li>
+                            <li>O campeão recebe o título de <strong>Campeão Pauperalho do Ano</strong>.</li>
+                        </ul>
+                    </div>
+
+                    <div class="rule-section card">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Penalidades</h3>
+                        <ul>
+                            <li><strong>Atraso na partida:</strong> Advertência</li>
+                            <li><strong>Não comparecimento:</strong> Derrota por W.O.</li>
+                            <li><strong>Comportamento anti-esportivo:</strong> Desqualificação</li>
+                            <li><strong>Deck ilegal:</strong> Desqualificação sem direito a recurso</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Decklists Section -->
+        <section class="section decklists-section" id="decklists" style="display: none;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-cards"></i>
+                        Decklists
+                    </h2>
+                    <p class="section-subtitle">Veja os decks dos participantes da liga atual</p>
+                </div>
+
+                <div class="decklists-content" id="decklistsContent">
+                    <!-- Decklists will be populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics Section -->
+        <section class="section statistics-section" id="statistics" style="display: none;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Estatísticas
+                    </h2>
+                    <p class="section-subtitle">Análises e gráficos da liga atual</p>
+                </div>
+
+                <div class="statistics-content">
+                    <div class="stats-grid">
+                        <div class="stat-card card">
+                            <h3>Distribuição de Arquétipos</h3>
+                            <div class="chart-container">
+                                <canvas id="deckDistributionChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="stat-card card">
+                            <h3>Taxa de Vitórias</h3>
+                            <div class="chart-container">
+                                <canvas id="winRateChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="stat-card card">
+                            <h3>Partidas por Mês</h3>
+                            <div class="chart-container">
+                                <canvas id="monthlyGamesChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="stat-card card">
+                            <h3>Matchup de Arquétipos</h3>
+                            <div class="chart-container">
+                                <canvas id="matchupChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Section -->
+        <section class="section admin-section" id="admin" style="display: none;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-cogs"></i>
+                        Painel Administrativo
+                    </h2>
+                    <p class="section-subtitle">Gerencie a liga e configure as configurações</p>
+                </div>
+
+                <div class="admin-content">
+                    <div class="admin-tabs">
+                        <button class="btn btn-outline active" data-tab="league">Liga</button>
+                        <button class="btn btn-outline" data-tab="users">Usuários</button>
+                        <button class="btn btn-outline" data-tab="games">Jogos</button>
+                        <button class="btn btn-outline" data-tab="export">Exportar</button>
+                    </div>
+
+                    <div class="admin-panel">
+                        <div class="tab-content active" id="leagueTab">
+                            <div class="admin-controls card">
+                                <h3>Configurações da Liga</h3>
+                                <div class="control-group">
+                                    <label>Status das Inscrições:</label>
+                                    <div class="toggle-group">
+                                        <button class="btn btn-success" id="openRegistration">
+                                            <i class="fas fa-unlock"></i>
+                                            Abrir Inscrições
+                                        </button>
+                                        <button class="btn btn-danger" id="closeRegistration">
+                                            <i class="fas fa-lock"></i>
+                                            Fechar Inscrições
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <button class="btn btn-warning" id="resetLeague">
+                                        <i class="fas fa-redo"></i>
+                                        Reiniciar Liga
+                                    </button>
+                                    <button class="btn btn-info" id="generateBracket">
+                                        <i class="fas fa-trophy"></i>
+                                        Gerar Bracket
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="usersTab">
+                            <div class="admin-controls card">
+                                <h3>Gerenciamento de Usuários</h3>
+                                <div class="user-table-container">
+                                    <table class="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nome</th>
+                                                <th>Email</th>
+                                                <th>Função</th>
+                                                <th>Status</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="adminUsersTable">
+                                            <!-- Users will be populated dynamically -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="gamesTab">
+                            <div class="admin-controls card">
+                                <h3>Validação de Jogos</h3>
+                                <div id="pendingGames">
+                                    <!-- Pending games will be populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" id="exportTab">
+                            <div class="admin-controls card">
+                                <h3>Exportar Dados</h3>
+                                <div class="export-controls">
+                                    <button class="btn btn-outline" id="exportUsers">
+                                        <i class="fas fa-users"></i>
+                                        Exportar Usuários
+                                    </button>
+                                    <button class="btn btn-outline" id="exportGames">
+                                        <i class="fas fa-gamepad"></i>
+                                        Exportar Jogos
+                                    </button>
+                                    <button class="btn btn-outline" id="exportRankings">
+                                        <i class="fas fa-trophy"></i>
+                                        Exportar Classificação
+                                    </button>
+                                    <button class="btn btn-outline" id="exportAll">
+                                        <i class="fas fa-database"></i>
+                                        Exportar Tudo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Liga Pauperalho</h4>
+                    <p>A melhor liga de Magic: The Gathering Pauper online.</p>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Links Úteis</h4>
+                    <ul>
+                        <li><a href="#rules">Regras</a></li>
+                        <li><a href="#rankings">Classificação</a></li>
+                        <li><a href="#decklists">Decklists</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Contato</h4>
+                    <p>Discord: Liga Pauperalho</p>
+                    <p>Email: contato@pauperalho.com</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 Liga Pauperalho. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Container -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-container" id="modalContainer">
+            <button class="modal-close" id="modalClose">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-content" id="modalContent">
+                <!-- Modal content will be inserted dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer">
+        <!-- Notifications will be inserted dynamically -->
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/utils.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/league.js"></script>
+    <script src="js/rankings.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
