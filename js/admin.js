@@ -184,7 +184,7 @@ class AdminManager {
   showBracketModal(players) {
     const bracketHTML = this.generateBracketHTML(players);
 
-    const modalContent = `
+    const modalHTML = `
       <div class="modal-header">
         <h2 class="modal-title">Bracket do Torneio - Top 8</h2>
         <p class="modal-subtitle">Bracket gerado com base na classificação atual</p>
@@ -200,10 +200,10 @@ class AdminManager {
     `;
 
     const modalOverlay = document.getElementById('modalOverlay');
-    const modalContent = document.getElementById('modalContent');
+    const modalContentElement = document.getElementById('modalContent');
 
-    if (modalContent) {
-      modalContent.innerHTML = modalContent;
+    if (modalContentElement) {
+      modalContentElement.innerHTML = modalHTML;
     }
 
     if (modalOverlay) {
