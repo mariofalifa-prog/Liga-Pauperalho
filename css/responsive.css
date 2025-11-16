@@ -1,0 +1,600 @@
+/* Responsive Design - Mobile First Approach */
+
+/* Small Breakpoint - 320px and up */
+@media (max-width: 575.98px) {
+  :root {
+    --font-size-5xl: 2.5rem;
+    --font-size-4xl: 2rem;
+    --font-size-3xl: 1.5rem;
+    --spacing-3xl: 2rem;
+    --spacing-2xl: 1.5rem;
+  }
+
+  /* Container */
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
+
+  /* Header */
+  .header {
+    height: auto;
+    min-height: var(--header-height);
+  }
+
+  .header-content {
+    flex-wrap: wrap;
+    padding: var(--spacing-sm) 0;
+  }
+
+  .logo {
+    order: 1;
+    flex: 1;
+    font-size: var(--font-size-lg);
+  }
+
+  .nav-menu {
+    order: 3;
+    width: 100%;
+    flex: none;
+    display: none;
+    position: relative;
+  }
+
+  .nav-menu.active {
+    display: block;
+    margin-top: var(--spacing-md);
+  }
+
+  .nav-list {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background-color: var(--color-secondary-dark);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-border-primary);
+  }
+
+  .user-area {
+    order: 2;
+  }
+
+  .mobile-menu-toggle {
+    display: block;
+    order: 3;
+  }
+
+  .user-info {
+    align-items: center;
+    text-align: right;
+  }
+
+  .user-name {
+    font-size: var(--font-size-sm);
+  }
+
+  .user-role {
+    font-size: var(--font-size-xs);
+  }
+
+  /* Buttons */
+  .btn {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .btn-large {
+    font-size: var(--font-size-base);
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .auth-buttons {
+    gap: var(--spacing-xs);
+  }
+
+  /* Hero Section */
+  .hero {
+    min-height: 100vh;
+    padding: var(--spacing-lg) 0;
+  }
+
+  .hero-content {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+    text-align: center;
+  }
+
+  .hero-title {
+    font-size: var(--font-size-4xl);
+    justify-content: center;
+  }
+
+  .hero-subtitle {
+    font-size: var(--font-size-lg);
+  }
+
+  .hero-description p {
+    font-size: var(--font-size-base);
+  }
+
+  .hero-status {
+    align-items: center;
+  }
+
+  .status-card {
+    flex-direction: column;
+    text-align: center;
+    padding: var(--spacing-lg);
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    width: 100%;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Section Headers */
+  .section {
+    padding: var(--spacing-2xl) 0;
+  }
+
+  .section-header {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .section-title {
+    font-size: var(--font-size-3xl);
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .section-title i {
+    font-size: var(--font-size-2xl);
+  }
+
+  .section-subtitle {
+    font-size: var(--font-size-base);
+  }
+
+  /* Registration Section */
+  .registration-content {
+    gap: var(--spacing-lg);
+  }
+
+  .registration-info .info-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+
+  .registration-form {
+    padding: var(--spacing-md);
+  }
+
+  /* Rankings Section */
+  .rankings-controls {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .view-toggle {
+    width: 100%;
+  }
+
+  .export-buttons {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .rankings-table {
+    font-size: var(--font-size-sm);
+  }
+
+  .rankings-table th,
+  .rankings-table td {
+    padding: var(--spacing-sm);
+  }
+
+  /* Rules Section */
+  .rules-content {
+    gap: var(--spacing-md);
+  }
+
+  .rule-section {
+    padding: var(--spacing-md);
+  }
+
+  .rule-section h3 {
+    font-size: var(--font-size-lg);
+  }
+
+  /* Statistics Section */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .stat-card {
+    padding: var(--spacing-md);
+  }
+
+  .chart-container {
+    height: 250px;
+  }
+
+  /* Admin Section */
+  .admin-tabs {
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  .admin-tabs .btn {
+    flex: 1;
+    min-width: 100px;
+    font-size: var(--font-size-sm);
+  }
+
+  .admin-controls {
+    padding: var(--spacing-md);
+  }
+
+  /* Tables */
+  .table-responsive {
+    margin: 0 -var(--spacing-sm);
+  }
+
+  .admin-table {
+    font-size: var(--font-size-sm);
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  /* Modal */
+  .modal-overlay {
+    padding: var(--spacing-sm);
+  }
+
+  .modal-container {
+    max-width: 100%;
+    margin: var(--spacing-sm);
+  }
+
+  .modal-content {
+    padding: var(--spacing-lg);
+  }
+
+  .modal-footer {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+  }
+
+  /* Footer */
+  .footer {
+    padding: var(--spacing-xl) 0 var(--spacing-md);
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+    text-align: center;
+  }
+
+  .footer-section ul {
+    text-align: center;
+  }
+
+  /* Notification */
+  .notification-container {
+    left: var(--spacing-sm);
+    right: var(--spacing-sm);
+    max-width: none;
+  }
+
+  .notification {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-sm);
+  }
+}
+
+/* Medium Breakpoint - 768px and up */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  /* Container */
+  .container {
+    padding: 0 var(--spacing-md);
+  }
+
+  /* Hero */
+  .hero-title {
+    font-size: var(--font-size-4xl);
+  }
+
+  .hero-content {
+    gap: var(--spacing-2xl);
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+  }
+
+  /* Info Grid */
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Tables */
+  .table-responsive {
+    margin: 0;
+  }
+
+  /* Modal */
+  .modal-container {
+    max-width: 600px;
+  }
+
+  /* Footer */
+  .footer-content {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Large Breakpoint - 992px and up */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  /* Container */
+  .container {
+    padding: 0 var(--spacing-lg);
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xl);
+  }
+
+  /* Info Grid */
+  .info-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Extra Large Breakpoint - 1200px and up */
+@media (min-width: 1200px) {
+  /* Stats Grid */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xl);
+  }
+
+  /* Info Grid */
+  .info-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Registration */
+  .registration-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--spacing-xl);
+  }
+}
+
+/* Touch Device Specific */
+@media (hover: none) and (pointer: coarse) {
+  .btn:hover {
+    transform: none;
+  }
+
+  .card:hover {
+    transform: none;
+  }
+
+  .nav-link:hover {
+    background-color: transparent;
+  }
+
+  /* Larger touch targets */
+  .btn {
+    min-height: 44px;
+  }
+
+  .nav-link {
+    padding: var(--spacing-md);
+  }
+
+  /* Remove hover states, keep focus states */
+  .card:hover::before {
+    opacity: 0;
+  }
+
+  .modal-close:hover {
+    background-color: transparent;
+  }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Sharper text rendering */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Crisper borders */
+  .card,
+  .btn,
+  .modal-container {
+    border-width: 0.5px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .status-indicator i {
+    animation: none;
+  }
+
+  .progress-fill::after {
+    animation: none;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .header,
+  .footer,
+  .hero-actions,
+  .nav-menu,
+  .mobile-menu-toggle,
+  .modal-overlay,
+  .notification-container,
+  .loading-overlay {
+    display: none !important;
+  }
+
+  .main-content {
+    margin-top: 0;
+  }
+
+  .section {
+    padding: var(--spacing-lg) 0;
+    break-inside: avoid;
+  }
+
+  .card {
+    border: 1px solid #000;
+    box-shadow: none;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .hero {
+    min-height: auto;
+    padding: var(--spacing-lg) 0;
+  }
+
+  .hero-background {
+    background: none;
+  }
+
+  .hero-content {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .table {
+    border: 1px solid #000;
+  }
+
+  .table th,
+  .table td {
+    border: 1px solid #000;
+    background: white;
+    color: black;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  .status-card,
+  .btn {
+    border: 1px solid #000;
+    color: black;
+  }
+}
+
+/* Landscape Mode */
+@media (max-height: 500px) and (orientation: landscape) {
+  .header {
+    height: 50px;
+  }
+
+  .main-content {
+    margin-top: 50px;
+  }
+
+  .hero {
+    min-height: auto;
+    padding: var(--spacing-lg) 0;
+  }
+
+  .hero-title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .section {
+    padding: var(--spacing-lg) 0;
+  }
+
+  .modal-container {
+    max-height: 80vh;
+  }
+}
+
+/* iPad and Tablet Specific */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .hero-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Large Desktop - 1440px and up */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1400px;
+  }
+
+  .hero-content {
+    gap: var(--spacing-3xl);
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .info-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+/* Ultra-wide Desktop - 1920px and up */
+@media (min-width: 1920px) {
+  .container {
+    max-width: 1600px;
+  }
+
+  .hero-title {
+    font-size: 4rem;
+  }
+
+  .section-title {
+    font-size: 3rem;
+  }
+}
