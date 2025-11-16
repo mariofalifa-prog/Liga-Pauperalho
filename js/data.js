@@ -1176,6 +1176,90 @@ class DataManager {
     );
   }
 
+  // Top 8 Management
+  setManualTop8(top8Data) {
+    const top8Array = Array.isArray(top8Data) ? top8Data : [top8Data];
+    this.data.leagues.current.manualTop8 = top8Array.map((player, index) => ({
+      position: index + 1,
+      userId: player.userId,
+      rank: player.rank || index + 1,
+      totalPoints: player.totalPoints || 0,
+      wins: player.wins || 0,
+      losses: player.losses || 0,
+      winRate: player.winRate || 0,
+      deckArchetype: player.deckArchetype || '',
+      games: player.games || 0,
+      notes: player.notes || '',
+      setAt: new Date().toISOString(),
+      setBy: player.setBy || null
+    }));
+    this.saveData();
+    return this.data.leagues.current.manualTop8;
+  }
+
+  getManualTop8() {
+    return this.data.leagues.current.manualTop8 || [];
+  }
+
+  hasManualTop8() {
+    return this.data.leagues.current.manualTop8 && this.data.leagues.current.manualTop8.length > 0;
+  }
+
+  clearManualTop8() {
+    this.data.leagues.current.manualTop8 = null;
+    this.saveData();
+  }
+
+  getTop8Players(leagueId = 'current-league') {
+    // First check for manual Top 8
+    if (leagueId === 'current-league' && this.hasManualTop8()) {
+      return this.getManualTop8();
+    }
+
+    // Otherwise calculate from rankings
+    const rankings = this.calculateRankings(leagueId);
+    return rankings.slice(0, 8);
+  }
+
+  updateTop8Player(position, updates) {
+    if (!this.data.leagues.current.manualTop8) {
+      throw new Error('Não há Top 8 manual definido');
+    }
+
+    const playerIndex = this.data.leagues.current.manualTop8.findIndex(p => p.position === position);
+    if (playerIndex === -1) {
+      throw new Error('Jogador não encontrado no Top 8');
+    }
+
+    const updatedPlayer = {
+      ...this.data.leagues.current.manualTop8[playerIndex],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+
+    this.data.leagues.current.manualTop8[playerIndex] = updatedPlayer;
+    this.saveData();
+    return updatedPlayer;
+  }
+
+  // Enhanced rankings with Top 8 consideration
+  calculateRankingsWithTop8(leagueId = 'current-league') {
+    const rankings = this.calculateRankings(leagueId);
+    const top8Players = this.getTop8Players(leagueId);
+
+    // Mark Top 8 players
+    rankings.forEach(rank => {
+      rank.isTop8 = top8Players.some(top8 => top8.userId === rank.userId);
+      if (rank.isTop8) {
+        const top8Player = top8Players.find(top8 => top8.userId === rank.userId);
+        rank.top8Position = top8Player.position;
+        rank.isManualTop8 = this.hasManualTop8();
+      }
+    });
+
+    return rankings;
+  }
+
   getStorageInfo() {
     const usage = Utils.getLocalStorageUsage();
     return {
@@ -1186,6 +1270,7 @@ class DataManager {
       notificationCount: this.data.notifications.length,
       archivedLeagues: this.data.leagues.archived.length,
       archetypeCount: this.data.settings.deckArchetypes.length,
+      hasManualTop8: this.hasManualTop8(),
       version: this.data.version
     };
   }
