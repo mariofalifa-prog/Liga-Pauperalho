@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Login - Liga Pauperalho</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .result.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .console {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-sign-in-alt"></i> Teste de Login - Liga Pauperalho</h1>
+
+        <div class="result info">
+            <strong>Informações de Login Padrão:</strong><br>
+            Email: admin@pauperalho.com<br>
+            Senha: admin123
+        </div>
+
+        <!-- Testar Hash -->
+        <h2><i class="fas fa-key"></i> Testar Hash de Senha</h2>
+        <div class="form-group">
+            <label>Senha para Testar Hash:</label>
+            <input type="text" id="hashInput" value="admin123">
+        </div>
+        <button class="btn" onclick="testHash()">Gerar Hash</button>
+        <div id="hashResult"></div>
+
+        <!-- Testar Login Direto -->
+        <h2><i class="fas fa-user-shield"></i> Testar Login Direto</h2>
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" id="testEmail" value="admin@pauperalho.com">
+        </div>
+        <div class="form-group">
+            <label>Senha:</label>
+            <input type="password" id="testPassword" value="admin123">
+        </div>
+        <button class="btn" onclick="testDirectLogin()">Testar Login</button>
+        <div id="loginResult"></div>
+
+        <!-- Criar Admin -->
+        <h2><i class="fas fa-user-plus"></i> Criar/Recriar Admin</h2>
+        <button class="btn" onclick="createAdmin()">Criar Admin</button>
+        <div id="createResult"></div>
+
+        <!-- Console -->
+        <h2><i class="fas fa-terminal"></i> Console</h2>
+        <div class="console" id="console">Aguardando testes...</div>
+        <button class="btn" onclick="clearConsole()">Limpar Console</button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/data.js"></script>
+    <script>
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            const consoleEl = document.getElementById('console');
+            consoleEl.innerHTML += `[${timestamp}] ${icon} ${message}\n`;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        function clearConsole() {
+            document.getElementById('console').innerHTML = 'Console limpo...\n';
+        }
+
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.className = `result ${type}`;
+            element.innerHTML = message;
+        }
+
+        function testHash() {
+            const password = document.getElementById('hashInput').value;
+            if (!password) {
+                showResult('hashResult', 'Digite uma senha para gerar o hash', 'error');
+                return;
+            }
+
+            try {
+                const hash = Utils.hashPassword(password);
+                showResult('hashResult', `Hash para "${password}": <strong>${hash}</strong>`, 'success');
+                log(`Hash gerado para "${password}": ${hash}`, 'success');
+            } catch (error) {
+                showResult('hashResult', `Erro ao gerar hash: ${error.message}`, 'error');
+                log(`Erro no hash: ${error.message}`, 'error');
+            }
+        }
+
+        function testDirectLogin() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+
+            if (!email || !password) {
+                showResult('loginResult', 'Preencha email e senha', 'error');
+                return;
+            }
+
+            try {
+                log(`Testando login: ${email} / ${password}`, 'info');
+
+                // Verificar se usuário existe
+                const user = dataManager.getUserByEmail(email);
+                if (!user) {
+                    showResult('loginResult', `Usuário não encontrado: ${email}`, 'error');
+                    log(`Usuário não encontrado: ${email}`, 'error');
+                    return;
+                }
+
+                log(`Usuário encontrado: ${user.name} (${user.role})`, 'success');
+
+                // Verificar senha
+                const inputHash = Utils.hashPassword(password);
+                const storedHash = user.password;
+
+                log(`Hash da senha digitada: ${inputHash}`, 'info');
+                log(`Hash armazenado: ${storedHash}`, 'info');
+                log(`Senhas coincidem: ${inputHash === storedHash}`, inputHash === storedHash ? 'success' : 'error');
+
+                if (inputHash === storedHash) {
+                    showResult('loginResult', '✅ Login bem-sucedido! Senha correta.', 'success');
+
+                    // Criar sessão
+                    const session = dataManager.createSession(user.id, false);
+                    log(`Sessão criada: ${session.token}`, 'success');
+                } else {
+                    showResult('loginResult', '❌ Falha no login! Senha incorreta.', 'error');
+                }
+
+            } catch (error) {
+                showResult('loginResult', `Erro no login: ${error.message}`, 'error');
+                log(`Erro no login: ${error.message}`, 'error');
+            }
+        }
+
+        function createAdmin() {
+            try {
+                log('Criando/recriando usuário admin...', 'info');
+
+                // Verificar se admin já existe
+                let adminUser = dataManager.getUserByEmail('admin@pauperalho.com');
+                if (adminUser) {
+                    log('Usuário admin já existe, atualizando senha...', 'warning');
+                    dataManager.deleteUser(adminUser.id);
+                    log('Usuário admin antigo removido', 'success');
+                }
+
+                // Criar novo admin
+                const newAdmin = dataManager.createUser({
+                    name: 'Administrador',
+                    email: 'admin@pauperalho.com',
+                    password: 'admin123',
+                    role: 'admin'
+                });
+
+                log(`Admin criado com sucesso:`, 'success');
+                log(`ID: ${newAdmin.id}`, 'info');
+                log(`Email: ${newAdmin.email}`, 'info');
+                log(`Nome: ${newAdmin.name}`, 'info');
+                log(`Senha (plain): admin123`, 'info');
+                log(`Senha (hash): ${newAdmin.password}`, 'info');
+                log(`Role: ${newAdmin.role}`, 'info');
+
+                showResult('createResult',
+                    `✅ Admin criado com sucesso!<br>
+                    ID: ${newAdmin.id}<br>
+                    Email: ${newAdmin.email}<br>
+                    Hash: ${newAdmin.password}`,
+                    'success'
+                );
+
+                // Testar login automático
+                setTimeout(() => {
+                    log('Testando login automático...', 'info');
+                    testDirectLogin();
+                }, 1000);
+
+            } catch (error) {
+                showResult('createResult', `Erro ao criar admin: ${error.message}`, 'error');
+                log(`Erro ao criar admin: ${error.message}`, 'error');
+            }
+        }
+
+        // Verificar estado inicial
+        window.addEventListener('load', () => {
+            log('Página de teste de login carregada', 'success');
+
+            try {
+                // Verificar se os módulos estão carregados
+                log('Verificando módulos...', 'info');
+
+                if (typeof Utils !== 'undefined') {
+                    log('✅ Utils carregado', 'success');
+                } else {
+                    log('❌ Utils não encontrado', 'error');
+                }
+
+                if (typeof dataManager !== 'undefined') {
+                    log('✅ dataManager carregado', 'success');
+                } else {
+                    log('❌ dataManager não encontrado', 'error');
+                }
+
+                // Verificar usuários existentes
+                const users = dataManager.getAllUsers();
+                log(`Total de usuários: ${users.length}`, 'info');
+
+                users.forEach(user => {
+                    log(`Usuário: ${user.email} (${user.name}) - Role: ${user.role}`, 'info');
+                });
+
+                // Verificar se admin existe
+                const adminUser = dataManager.getUserByEmail('admin@pauperalho.com');
+                if (adminUser) {
+                    log('✅ Usuário admin encontrado', 'success');
+                    log(`Hash da senha admin: ${adminUser.password}`, 'info');
+                } else {
+                    log('❌ Usuário admin não encontrado', 'error');
+                }
+
+            } catch (error) {
+                log(`Erro na inicialização: ${error.message}`, 'error');
+            }
+        });
+    </script>
+</body>
+</html>
