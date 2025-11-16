@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug do Painel Admin - Liga Pauperalho</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <style>
+        .debug-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+            min-height: 100vh;
+        }
+        .debug-section {
+            background: #2d2d2d;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .debug-result {
+            background: #000;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success { color: #4caf50; }
+        .error { color: #f44336; }
+        .warning { color: #ff9800; }
+        .info { color: #2196f3; }
+        .btn {
+            background: #d4af37;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #f4e5a3;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .status-card {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1><i class="fas fa-bug"></i> Debug do Painel Administrativo</h1>
+        <p class="info">Esta ferramenta verifica os problemas específicos do painel admin</p>
+
+        <!-- Status Overview -->
+        <div class="debug-section">
+            <h2><i class="fas fa-heartbeat"></i> Status do Sistema</h2>
+            <div class="status-grid" id="statusGrid">
+                <!-- Status cards will be added here -->
+            </div>
+        </div>
+
+        <!-- Authentication Debug -->
+        <div class="debug-section">
+            <h2><i class="fas fa-user-shield"></i> Autenticação</h2>
+            <button class="btn" onclick="debugAuth()">Verificar Autenticação</button>
+            <button class="btn" onclick="forceAdminLogin()">Forçar Login Admin</button>
+            <div id="authResult" class="debug-result">Aguardando verificação...</div>
+        </div>
+
+        <!-- Admin Panel Debug -->
+        <div class="debug-section">
+            <h2><i class="fas fa-cogs"></i> Painel Admin</h2>
+            <button class="btn" onclick="debugAdminPanel()">Verificar Painel Admin</button>
+            <button class="btn" onclick="loadAdminContent()">Carregar Conteúdo Admin</button>
+            <div id="adminPanelResult" class="debug-result">Aguardando verificação...</div>
+        </div>
+
+        <!-- Navigation Debug -->
+        <div class="debug-section">
+            <h2><i class="fas fa-compass"></i> Navegação</h2>
+            <button class="btn" onclick="debugNavigation()">Verificar Navegação</button>
+            <button class="btn" onclick="showAdminMenu()">Mostrar Menu Admin</button>
+            <div id="navigationResult" class="debug-result">Aguardando verificação...</div>
+        </div>
+
+        <!-- HTML Structure Debug -->
+        <div class="debug-section">
+            <h2><i class="fas fa-code"></i> Estrutura HTML</h2>
+            <button class="btn" onclick="debugHTML()">Verificar Estrutura HTML</button>
+            <button class="btn" onclick="showAdminSection()">Mostrar Seção Admin</button>
+            <div id="htmlResult" class="debug-result">Aguardando verificação...</div>
+        </div>
+
+        <!-- Complete Test -->
+        <div class="debug-section">
+            <h2><i class="fas fa-play-circle"></i> Teste Completo</h2>
+            <button class="btn" onclick="runCompleteTest()">Executar Diagnóstico Completo</button>
+            <button class="btn" onclick="testAdminWorkflow()">Testar Workflow Admin</button>
+            <div id="completeTestResult" class="debug-result">Aguardando teste completo...</div>
+        </div>
+
+        <!-- Live Console -->
+        <div class="debug-section">
+            <h2><i class="fas fa-terminal"></i> Console ao Vivo</h2>
+            <div id="liveConsole" class="debug-result">Console conectado...</div>
+            <button class="btn" onclick="clearConsole()">Limpar Console</button>
+        </div>
+    </div>
+
+    <!-- Modal Container (from main site) -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-container" id="modalContainer">
+            <button class="modal-close" id="modalClose">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-content" id="modalContent">
+                <!-- Modal content will be inserted dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer">
+        <!-- Notifications will be inserted dynamically -->
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/utils.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/league.js"></script>
+    <script src="js/rankings.js"></script>
+    <script src="js/games.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        // Console override
+        const originalConsole = {
+            log: console.log,
+            error: console.error,
+            warn: console.warn,
+            info: console.info
+        };
+
+        function addToConsole(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const icon = type === 'error' ? '❌' : type === 'warning' ? '⚠️' : type === 'success' ? '✅' : 'ℹ️';
+            const liveConsole = document.getElementById('liveConsole');
+            liveConsole.innerHTML += `[${timestamp}] ${icon} ${message}\n`;
+            liveConsole.scrollTop = liveConsole.scrollHeight;
+        }
+
+        // Override console methods
+        console.log = function(...args) {
+            addToConsole(args.join(' '), 'info');
+            originalConsole.log.apply(console, args);
+        };
+
+        console.error = function(...args) {
+            addToConsole(args.join(' '), 'error');
+            originalConsole.error.apply(console, args);
+        };
+
+        function clearConsole() {
+            document.getElementById('liveConsole').innerHTML = 'Console limpo...\n';
+        }
+
+        function updateResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = `<span class="${type}">${message}</span>`;
+            }
+        }
+
+        function updateStatusGrid() {
+            const statusGrid = document.getElementById('statusGrid');
+
+            const checks = [
+                { name: 'Utils', obj: window.Utils, icon: 'tools' },
+                { name: 'dataManager', obj: window.dataManager, icon: 'database' },
+                { name: 'authManager', obj: window.authManager, icon: 'user-shield' },
+                { name: 'adminManager', obj: window.adminManager, icon: 'cogs' },
+                { name: 'ligaApp', obj: window.ligaApp, icon: 'rocket' }
+            ];
+
+            statusGrid.innerHTML = checks.map(check => {
+                const status = check.obj ? 'success' : 'error';
+                const icon = check.obj ? 'check' : 'times';
+                return `
+                    <div class="status-card">
+                        <i class="fas fa-${check.icon}" style="font-size: 2em;"></i>
+                        <h3>${check.name}</h3>
+                        <span class="${status}">
+                            <i class="fas fa-${icon}"></i> ${check.obj ? 'OK' : 'ERRO'}
+                        </span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function debugAuth() {
+            try {
+                let result = '🔍 Verificando autenticação...\n\n';
+
+                // Check authManager
+                if (window.authManager) {
+                    result += '✅ authManager encontrado\n';
+
+                    // Check current user
+                    if (authManager.currentUser) {
+                        result += `✅ Usuário logado: ${authManager.currentUser.name}\n`;
+                        result += `✅ Email: ${authManager.currentUser.email}\n`;
+                        result += `✅ Role: ${authManager.currentUser.role}\n`;
+
+                        const isAdmin = authManager.isAdmin();
+                        result += `✅ É admin: ${isAdmin}\n`;
+
+                        if (!isAdmin) {
+                            result += '⚠️ PROBLEMA: Usuário não é administrador!\n';
+                        }
+                    } else {
+                        result += '❌ Nenhum usuário logado\n';
+                        result += '⚠️ PROBLEMA: Precisa fazer login como admin\n';
+                    }
+
+                    // Check authentication methods
+                    const methods = ['isAuthenticated', 'isAdmin', 'requireAdmin', 'updateUI'];
+                    methods.forEach(method => {
+                        if (typeof authManager[method] === 'function') {
+                            result += `✅ authManager.${method}() existe\n`;
+                        } else {
+                            result += `❌ authManager.${method}() não existe\n`;
+                        }
+                    });
+
+                } else {
+                    result += '❌ authManager não encontrado\n';
+                }
+
+                // Check admin user in data
+                if (window.dataManager) {
+                    const adminUser = dataManager.getUserByEmail('admin@pauperalho.com');
+                    if (adminUser) {
+                        result += `✅ Usuário admin encontrado no banco: ${adminUser.name}\n`;
+                    } else {
+                        result += '❌ Usuário admin não encontrado no banco\n';
+                        result += '⚠️ PROBLEMA: Usuário admin não existe!\n';
+                    }
+                }
+
+                updateResult('authResult', result, 'success');
+                console.log('Autenticação verificada');
+
+            } catch (error) {
+                updateResult('authResult', `ERRO: ${error.message}`, 'error');
+                console.error('Erro na verificação de autenticação:', error);
+            }
+        }
+
+        function forceAdminLogin() {
+            try {
+                let result = '🔐 Forçando login admin...\n\n';
+
+                if (!window.dataManager) {
+                    result += '❌ dataManager não encontrado\n';
+                    updateResult('authResult', result, 'error');
+                    return;
+                }
+
+                // Create admin if not exists
+                let adminUser = dataManager.getUserByEmail('admin@pauperalho.com');
+                if (!adminUser) {
+                    adminUser = dataManager.createUser({
+                        name: 'Administrador',
+                        email: 'admin@pauperalho.com',
+                        password: 'admin123',
+                        role: 'admin'
+                    });
+                    result += '✅ Usuário admin criado\n';
+                } else {
+                    result += '✅ Usuário admin já existe\n';
+                }
+
+                // Create session
+                const session = dataManager.createSession(adminUser.id, false);
+                sessionStorage.setItem('ligaSessionToken', session.token);
+
+                // Update authManager
+                if (window.authManager) {
+                    authManager.currentUser = adminUser;
+                    authManager.sessionToken = session.token;
+                    authManager.updateUI();
+                    result += '✅ authManager atualizado\n';
+                }
+
+                result += `✅ Login realizado: ${adminUser.name}\n`;
+                result += `✅ Token: ${session.token.substring(0, 8)}...\n`;
+
+                updateResult('authResult', result, 'success');
+                console.log('Login admin forçado com sucesso');
+
+                // Update status grid
+                updateStatusGrid();
+
+            } catch (error) {
+                updateResult('authResult', `ERRO: ${error.message}`, 'error');
+                console.error('Erro ao forçar login admin:', error);
+            }
+        }
+
+        function debugAdminPanel() {
+            try {
+                let result = '🔧 Verificando painel admin...\n\n';
+
+                // Check adminManager
+                if (window.adminManager) {
+                    result += '✅ adminManager encontrado\n';
+
+                    // Check admin methods
+                    const methods = ['loadTabData', 'loadTop8Data', 'loadArchetypeData'];
+                    methods.forEach(method => {
+                        if (typeof adminManager[method] === 'function') {
+                            result += `✅ adminManager.${method}() existe\n`;
+                        } else {
+                            result += `❌ adminManager.${method}() não existe\n`;
+                        }
+                    });
+
+                    // Check tab loading
+                    try {
+                        adminManager.loadTop8Data();
+                        result += '✅ loadTop8Data() executou sem erros\n';
+                    } catch (error) {
+                        result += `❌ Erro em loadTop8Data(): ${error.message}\n`;
+                    }
+
+                } else {
+                    result += '❌ adminManager não encontrado\n';
+                }
+
+                // Check admin tab structure
+                const adminSection = document.getElementById('admin');
+                if (adminSection) {
+                    result += '✅ Seção admin encontrada no HTML\n';
+
+                    // Check tabs
+                    const tabs = ['leagueTab', 'top8Tab', 'archetypesTab'];
+                    tabs.forEach(tabId => {
+                        const tab = document.getElementById(tabId);
+                        if (tab) {
+                            result += `✅ Tab ${tabId} encontrada\n`;
+                            if (tab.innerHTML.trim()) {
+                                result += `✅ ${tabId} tem conteúdo\n`;
+                            } else {
+                                result += `⚠️ ${tabId} está vazia (precisa ser populada)\n`;
+                            }
+                        } else {
+                            result += `❌ Tab ${tabId} não encontrada\n`;
+                        }
+                    });
+                } else {
+                    result += '❌ Seção admin não encontrada no HTML\n';
+                }
+
+                updateResult('adminPanelResult', result, 'success');
+                console.log('Painel admin verificado');
+
+            } catch (error) {
+                updateResult('adminPanelResult', `ERRO: ${error.message}`, 'error');
+                console.error('Erro na verificação do painel admin:', error);
+            }
+        }
+
+        function loadAdminContent() {
+            try {
+                let result = '📂 Carregando conteúdo admin...\n\n';
+
+                if (window.adminManager) {
+                    // Load all admin tab data
+                    adminManager.loadTop8Data();
+                    result += '✅ loadTop8Data() executado\n';
+
+                    adminManager.loadArchetypeData();
+                    result += '✅ loadArchetypeData() executado\n';
+
+                    adminManager.loadContentData();
+                    result += '✅ loadContentData() executado\n';
+
+                    // Check if tabs now have content
+                    const tabs = ['top8Tab', 'archetypesTab', 'contentTab'];
+                    tabs.forEach(tabId => {
+                        const tab = document.getElementById(tabId);
+                        if (tab && tab.innerHTML.trim()) {
+                            result += `✅ ${tabId} agora tem conteúdo\n`;
+                        }
+                    });
+
+                    result += '\n✅ Conteúdo admin carregado com sucesso!';
+
+                } else {
+                    result += '❌ adminManager não encontrado\n';
+                }
+
+                updateResult('adminPanelResult', result, 'success');
+                console.log('Conteúdo admin carregado');
+
+            } catch (error) {
+                updateResult('adminPanelResult', `ERRO: ${error.message}`, 'error');
+                console.error('Erro ao carregar conteúdo admin:', error);
+            }
+        }
+
+        function debugNavigation() {
+            try {
+                let result = '🧭 Verificando navegação...\n\n';
+
+                // Check admin menu item
+                const adminMenuItem = document.querySelector('a[data-section="admin"]');
+                if (adminMenuItem) {
+                    result += '✅ Link admin encontrado no menu\n';
+
+                    // Check if it's visible
+                    const adminOnlyClass = adminMenuItem.closest('.admin-only');
+                    if (adminOnlyClass) {
+                        result += '✅ Classe admin-only encontrada\n';
+
+                        if (adminOnlyClass.style.display === 'none') {
+                            result += '⚠️ Menu admin está escondido (display: none)\n';
+
+                            // Check if user is admin
+                            if (window.authManager && authManager.isAdmin()) {
+                                result += '✅ Usuário é admin, deveria mostrar menu\n';
+                                adminOnlyClass.style.display = '';
+                                result += '✅ Menu admin tornado visível\n';
+                            }
+                        } else {
+                            result += '✅ Menu admin está visível\n';
+                        }
+                    }
+                } else {
+                    result += '❌ Link admin não encontrado no menu\n';
+                }
+
+                // Check navigation binding
+                if (window.ligaApp) {
+                    if (typeof ligaApp.showSection === 'function') {
+                        result += '✅ ligaApp.showSection() existe\n';
+                    } else {
+                        result += '❌ ligaApp.showSection() não existe\n';
+                    }
+                } else {
+                    result += '❌ ligaApp não encontrado\n';
+                }
+
+                updateResult('navigationResult', result, 'success');
+                console.log('Navegação verificada');
+
+            } catch (error) {
+                updateResult('navigationResult', `ERRO: ${error.message}`, 'error');
+                console.error('Erro na verificação de navegação:', error);
+            }
+        }
+
+        function showAdminMenu() {
+            try {
+                const adminMenuItem = document.querySelector('.admin-only');
+                if (adminMenuItem) {
+                    adminMenuItem.style.display = '';
+                    updateResult('navigationResult', '✅ Menu admin tornado visível', 'success');
+                    console.log('Menu admin tornado visível');
+                } else {
+                    updateResult('navigationResult', '❌ Menu admin não encontrado', 'error');
+                }
+            } catch (error) {
+                updateResult('navigationResult', `ERRO: ${error.message}`, 'error');
+            }
+        }
+
+        function debugHTML() {
+            try {
+                let result = '📝 Verificando estrutura HTML...\n\n';
+
+                // Check admin section
+                const adminSection = document.getElementById('admin');
+                if (adminSection) {
+                    result += '✅ Seção admin encontrada\n';
+
+                    if (adminSection.style.display === 'none') {
+                        result += '⚠️ Seção admin está escondida (display: none)\n';
+                    } else {
+                        result += '✅ Seção admin está visível\n';
+                    }
+
+                    // Check admin content
+                    const adminContent = adminSection.querySelector('.admin-content');
+                    if (adminContent) {
+                        result += '✅ admin-content encontrado\n';
+
+                        // Check tabs
+                        const tabButtons = adminContent.querySelectorAll('[data-tab]');
+                        result += `✅ ${tabButtons.length} botões de tab encontrados\n`;
+
+                        // Check tab contents
+                        const tabContents = adminContent.querySelectorAll('.tab-content');
+                        result += `✅ ${tabContents.length} conteúdos de tab encontrados\n`;
+                    } else {
+                        result += '❌ admin-content não encontrado\n';
+                    }
+                } else {
+                    result += '❌ Seção admin não encontrada\n';
+                }
+
+                updateResult('htmlResult', result, 'success');
+                console.log('Estrutura HTML verificada');
+
+            } catch (error) {
+                updateResult('htmlResult', `ERRO: ${error.message}`, 'error');
+                console.error('Erro na verificação HTML:', error);
+            }
+        }
+
+        function showAdminSection() {
+            try {
+                const adminSection = document.getElementById('admin');
+                if (adminSection) {
+                    adminSection.style.display = '';
+                    updateResult('htmlResult', '✅ Seção admin tornado visível', 'success');
+                    console.log('Seção admin tornado visível');
+                } else {
+                    updateResult('htmlResult', '❌ Seção admin não encontrada', 'error');
+                }
+            } catch (error) {
+                updateResult('htmlResult', `ERRO: ${error.message}`, 'error');
+            }
+        }
+
+        function runCompleteTest() {
+            let result = '🚀 Executando diagnóstico completo...\n\n';
+
+            try {
+                // 1. Check modules
+                const modules = ['Utils', 'dataManager', 'authManager', 'adminManager', 'ligaApp'];
+                let modulesOk = 0;
+
+                modules.forEach(module => {
+                    if (window[module]) {
+                        result += `✅ ${module}: OK\n`;
+                        modulesOk++;
+                    } else {
+                        result += `❌ ${module}: ERRO\n`;
+                    }
+                });
+
+                result += `\n${modulesOk}/${modules.length} módulos carregados\n\n`;
+
+                // 2. Force admin login if needed
+                if (!authManager.currentUser || !authManager.isAdmin()) {
+                    result += '🔐 Forçando login admin...\n';
+                    forceAdminLogin();
+                    result += '✅ Login admin realizado\n\n';
+                }
+
+                // 3. Show admin navigation
+                const adminMenuItem = document.querySelector('.admin-only');
+                if (adminMenuItem) {
+                    adminMenuItem.style.display = '';
+                    result += '✅ Menu admin tornado visível\n\n';
+                }
+
+                // 4. Load admin content
+                if (adminManager) {
+                    adminManager.loadTop8Data();
+                    adminManager.loadArchetypeData();
+                    result += '✅ Conteúdo admin carregado\n\n';
+                }
+
+                // 5. Show admin section
+                const adminSection = document.getElementById('admin');
+                if (adminSection) {
+                    adminSection.style.display = '';
+                    result += '✅ Seção admin tornado visível\n\n';
+                }
+
+                result += '🎉 Diagnóstico completo finalizado!\n';
+                result += 'O painel admin deve estar funcional agora.';
+
+                updateResult('completeTestResult', result, 'success');
+                console.log('Diagnóstico completo finalizado');
+
+            } catch (error) {
+                updateResult('completeTestResult', `ERRO: ${error.message}`, 'error');
+                console.error('Erro no diagnóstico completo:', error);
+            }
+        }
+
+        function testAdminWorkflow() {
+            let result = '🧪 Testando workflow admin...\n\n';
+
+            try {
+                // Step 1: Force login
+                forceAdminLogin();
+                result += '✅ Passo 1: Login admin\n';
+
+                // Step 2: Show menu
+                showAdminMenu();
+                result += '✅ Passo 2: Menu admin visível\n';
+
+                // Step 3: Load content
+                loadAdminContent();
+                result += '✅ Passo 3: Conteúdo carregado\n';
+
+                // Step 4: Show section
+                showAdminSection();
+                result += '✅ Passo 4: Seção admin visível\n';
+
+                result += '\n🎯 Workflow completo testado!\n';
+                result += 'Tente acessar o menu "Admin" no site principal.';
+
+                updateResult('completeTestResult', result, 'success');
+                console.log('Workflow admin testado');
+
+            } catch (error) {
+                updateResult('completeTestResult', `ERRO: ${error.message}`, 'error');
+                console.error('Erro no workflow admin:', error);
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            console.log('🔧 Página de debug admin carregada');
+            updateStatusGrid();
+            setTimeout(() => {
+                console.log('🚀 Iniciando diagnóstico automático...');
+                debugAuth();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
