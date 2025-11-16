@@ -59,6 +59,11 @@ class Utils {
     return new Date(date).toLocaleString('pt-BR', options);
   }
 
+  // Format date time (alias for formatDate)
+  static formatDateTime(date) {
+    return this.formatDate(date);
+  }
+
   // Get month name in Portuguese
   static getMonthName(month) {
     const months = [
