@@ -231,6 +231,12 @@ class LigaApp {
     rankingsManager.refresh();
   }
 
+  // Handle games route
+  handleGamesRoute() {
+    this.showSection('games');
+    gamesManager.loadMyGames();
+  }
+
   // Handle decklists route
   handleDecklistsRoute() {
     this.showSection('decklists');
