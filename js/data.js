@@ -653,6 +653,128 @@ class DataManager {
     return true;
   }
 
+  // Discord integration methods
+  async sendDiscordNotification(message, type = 'info') {
+    const discordSettings = this.data.settings.discord;
+    if (!discordSettings.enabled || !discordSettings.webhookUrl) {
+      return false;
+    }
+
+    try {
+      const payload = {
+        content: null,
+        embeds: [{
+          title: this.getDiscordTitle(type),
+          description: message,
+          color: this.getDiscordColor(type),
+          timestamp: new Date().toISOString(),
+          footer: {
+            text: 'Liga Pauperalho'
+          }
+        }]
+      };
+
+      const response = await fetch(discordSettings.webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      return response.ok;
+    } catch (error) {
+      console.error('Discord notification error:', error);
+      return false;
+    }
+  }
+
+  getDiscordTitle(type) {
+    const titles = {
+      'new_registration': '🎮 Nova Inscrição na Liga',
+      'game_result': '⚔️ Resultado de Jogo Registrado',
+      'league_update': '📅 Atualização da Liga',
+      'announcement': '📢 Anúncio Importante',
+      'info': 'ℹ️ Informação'
+    };
+    return titles[type] || titles.info;
+  }
+
+  getDiscordColor(type) {
+    const colors = {
+      'new_registration': 0x00ff00,    // Green
+      'game_result': 0xffaa00,        // Gold
+      'league_update': 0x0099ff,      // Blue
+      'announcement': 0xff0000,       // Red
+      'info': 0x9966ff                // Purple
+    };
+    return colors[type] || colors.info;
+  }
+
+  // Settings management methods
+  updateSettings(updates) {
+    this.data.settings = { ...this.data.settings, ...updates };
+    this.saveData();
+    return this.data.settings;
+  }
+
+  getSettings() {
+    return this.data.settings;
+  }
+
+  // Contact management
+  updateContactInfo(updates) {
+    this.data.settings.contactInfo = { ...this.data.settings.contactInfo, ...updates };
+    this.saveData();
+    return this.data.settings.contactInfo;
+  }
+
+  getContactInfo() {
+    return this.data.settings.contactInfo;
+  }
+
+  // Useful links management
+  addUsefulLink(link) {
+    const newLink = {
+      id: Utils.generateUUID(),
+      title: Utils.sanitizeInput(link.title),
+      url: Utils.sanitizeInput(link.url),
+      description: Utils.sanitizeInput(link.description || ''),
+      createdAt: new Date().toISOString()
+    };
+
+    this.data.settings.usefulLinks.push(newLink);
+    this.saveData();
+    return newLink;
+  }
+
+  updateUsefulLink(linkId, updates) {
+    const linkIndex = this.data.settings.usefulLinks.findIndex(link => link.id === linkId);
+    if (linkIndex !== -1) {
+      this.data.settings.usefulLinks[linkIndex] = {
+        ...this.data.settings.usefulLinks[linkIndex],
+        ...updates
+      };
+      this.saveData();
+      return this.data.settings.usefulLinks[linkIndex];
+    }
+    return null;
+  }
+
+  removeUsefulLink(linkId) {
+    const linkIndex = this.data.settings.usefulLinks.findIndex(link => link.id === linkId);
+    if (linkIndex !== -1) {
+      const removedLink = this.data.settings.usefulLinks.splice(linkIndex, 1)[0];
+      this.saveData();
+      return removedLink;
+    }
+    return null;
+  }
+
+  getUsefulLinks() {
+    return this.data.settings.usefulLinks;
+  }
+
   getStorageInfo() {
     const usage = Utils.getLocalStorageUsage();
     return {
