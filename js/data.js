@@ -913,6 +913,128 @@ class DataManager {
     return this.data.settings.usefulLinks;
   }
 
+  // Deck Archetype Management
+  addDeckArchetype(archetypeData) {
+    const newArchetype = {
+      id: Utils.generateUUID(),
+      name: Utils.sanitizeInput(archetypeData.name),
+      description: Utils.sanitizeInput(archetypeData.description || ''),
+      colors: Array.isArray(archetypeData.colors) ? archetypeData.colors : [],
+      sampleList: Utils.sanitizeInput(archetypeData.sampleList || ''),
+      metaTier: Utils.sanitizeInput(archetypeData.metaTier || 'Tier 3'),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    // Validate required fields
+    if (!newArchetype.name || newArchetype.name.trim() === '') {
+      throw new Error('Nome do arquétipo é obrigatório');
+    }
+
+    // Check for duplicate names
+    const existingArchetype = this.data.settings.deckArchetypes.find(
+      arch => arch.name.toLowerCase() === newArchetype.name.toLowerCase()
+    );
+
+    if (existingArchetype) {
+      throw new Error('Já existe um arquétipo com este nome');
+    }
+
+    this.data.settings.deckArchetypes.push(newArchetype);
+    this.saveData();
+    return newArchetype;
+  }
+
+  updateDeckArchetype(archetypeId, updates) {
+    const archetypeIndex = this.data.settings.deckArchetypes.findIndex(
+      arch => arch.id === archetypeId
+    );
+
+    if (archetypeIndex === -1) {
+      throw new Error('Arquétipo não encontrado');
+    }
+
+    // Check for duplicate names (if name is being updated)
+    if (updates.name) {
+      const existingArchetype = this.data.settings.deckArchetypes.find(
+        arch => arch.id !== archetypeId &&
+               arch.name.toLowerCase() === Utils.sanitizeInput(updates.name).toLowerCase()
+      );
+
+      if (existingArchetype) {
+        throw new Error('Já existe um arquétipo com este nome');
+      }
+    }
+
+    const updatedArchetype = {
+      ...this.data.settings.deckArchetypes[archetypeIndex],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+
+    // Sanitize string fields
+    if (updatedArchetype.name) updatedArchetype.name = Utils.sanitizeInput(updatedArchetype.name);
+    if (updatedArchetype.description) updatedArchetype.description = Utils.sanitizeInput(updatedArchetype.description);
+    if (updatedArchetype.sampleList) updatedArchetype.sampleList = Utils.sanitizeInput(updatedArchetype.sampleList);
+    if (updatedArchetype.metaTier) updatedArchetype.metaTier = Utils.sanitizeInput(updatedArchetype.metaTier);
+
+    this.data.settings.deckArchetypes[archetypeIndex] = updatedArchetype;
+    this.saveData();
+    return updatedArchetype;
+  }
+
+  deleteDeckArchetype(archetypeId) {
+    const archetypeIndex = this.data.settings.deckArchetypes.findIndex(
+      arch => arch.id === archetypeId
+    );
+
+    if (archetypeIndex === -1) {
+      throw new Error('Arquétipo não encontrado');
+    }
+
+    // Check if archetype is being used by any registrations
+    const registrationsWithArchetype = this.data.registrations.filter(
+      reg => reg.deckArchetype === this.data.settings.deckArchetypes[archetypeIndex].name
+    );
+
+    if (registrationsWithArchetype.length > 0) {
+      throw new Error('Não é possível excluir este arquétipo pois está sendo usado por jogadores inscritos');
+    }
+
+    const deletedArchetype = this.data.settings.deckArchetypes.splice(archetypeIndex, 1)[0];
+    this.saveData();
+    return deletedArchetype;
+  }
+
+  getDeckArchetype(archetypeId) {
+    return this.data.settings.deckArchetypes.find(arch => arch.id === archetypeId);
+  }
+
+  getAllDeckArchetypes() {
+    return [...this.data.settings.deckArchetypes];
+  }
+
+  getDeckArchetypesByTier(tier) {
+    return this.data.settings.deckArchetypes.filter(
+      arch => arch.metaTier.toLowerCase() === tier.toLowerCase()
+    );
+  }
+
+  getDeckArchetypesByColor(color) {
+    return this.data.settings.deckArchetypes.filter(
+      arch => arch.colors.some(c => c.toLowerCase() === color.toLowerCase())
+    );
+  }
+
+  searchDeckArchetypes(query) {
+    const searchTerm = query.toLowerCase();
+    return this.data.settings.deckArchetypes.filter(arch =>
+      arch.name.toLowerCase().includes(searchTerm) ||
+      arch.description.toLowerCase().includes(searchTerm) ||
+      arch.colors.some(c => c.toLowerCase().includes(searchTerm))
+    );
+  }
+
   getStorageInfo() {
     const usage = Utils.getLocalStorageUsage();
     return {
@@ -922,6 +1044,7 @@ class DataManager {
       gameCount: this.data.games.length,
       notificationCount: this.data.notifications.length,
       archivedLeagues: this.data.leagues.archived.length,
+      archetypeCount: this.data.settings.deckArchetypes.length,
       version: this.data.version
     };
   }
