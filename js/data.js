@@ -113,6 +113,144 @@ class DataManager {
           url: 'https://www.magicthegathering.com/mtgo',
           description: 'Jogue Magic online'
         }
+      ],
+      deckArchetypes: [
+        {
+          id: 'mono-blue-terror',
+          name: 'Mono Blue Terror',
+          description: 'Control deck baseado em mágicas de baixo custo e criaturas voadoras',
+          colors: ['Blue'],
+          sampleList: '4 Delver of Secrets\n4 Ninja of the Deep Hours\n4 Spellstutter Sprite\n4 Ponder\n4 Preordain\n4 Brainstorm\n4 Daze\n4 Force of Will\n4 Counterspell\n2 Hydroblast',
+          metaTier: 'Tier 1'
+        },
+        {
+          id: 'mono-red-burn',
+          name: 'Mono Red Burn',
+          description: 'Aggro deck focado em dano direto ao jogador',
+          colors: ['Red'],
+          sampleList: '4 Lightning Bolt\n4 Chain Lightning\n4 Rift Bolt\n4 Lava Dart\n4 Flame Rift\n4 Fireblast\n4 Price of Progress\n4 Goblin Guide\n4 Monastery Swiftspear',
+          metaTier: 'Tier 1'
+        },
+        {
+          id: 'mono-black-control',
+          name: 'Mono Black Control',
+          description: 'Control deck com remoção e gainhos de vida',
+          colors: ['Black'],
+          sampleList: '4 Tendrils of Corruption\n4 Chainer\'s Edict\n4 Innocent Blood\n4 Diabolic Edict\n4 Gurmag Angler\n4 Hymn to Tourach\n4 Duress\n4 Sign in Blood',
+          metaTier: 'Tier 2'
+        },
+        {
+          id: 'mono-green-stompy',
+          name: 'Mono Green Stompy',
+          description: 'Aggro deck com criaturas grandes e baixo custo',
+          colors: ['Green'],
+          sampleList: '4 Nest Invader\n4 Quirion Ranger\n4 Skarrgan Pit-Skulk\n4 Basking Rootwalla\n4 Vine Dryad\n4 Rancor\n4 Giant Growth\n4 Groundswell\n4 Aspect of Hydra',
+          metaTier: 'Tier 2'
+        },
+        {
+          id: 'mono-white-weenie',
+          name: 'Mono White Weenie',
+          description: 'Aggro deck com criaturas pequenas e eficientes',
+          colors: ['White'],
+          sampleList: '4 Soldiers of the Watch\n4 Guardian of the Guildpact\n4 Honor of the Pure\n4 Raise the Alarm\n4 Charge Across the Araba\n4 Prismatic Strands\n4 Journey to Nowhere',
+          metaTier: 'Tier 3'
+        },
+        {
+          id: 'boros-monarch',
+          name: 'Boros Monarch',
+          description: 'Midrange com mecanicas de monarca e bom controle de board',
+          colors: ['White', 'Red'],
+          sampleList: '4 Palace Sentinels\n4 Benevolent Bodyguard\n4 Castle Ardenvale\n4 Glory-Bound Initiate\n4 Dawnbringer Cleric\n4 ED/Khemek lore\n4 Bolster',
+          metaTier: 'Tier 1'
+        },
+        {
+          id: 'izzet-faeries',
+          name: 'Izzet Faeries',
+          description: 'Aggro-control com fadas e mágicas de instants',
+          colors: ['Blue', 'Red'],
+          sampleList: '4 Spellstutter Sprite\n4 Faerie Miscreant\n4 Ninja of the Deep Hours\n4 Cloud of Faeries\n4 Pester\n4 Snuff Out\n4 Manamorphose\n4 Lightning Bolt',
+          metaTier: 'Tier 2'
+        },
+        {
+          id: 'dimir-control',
+          name: 'Dimir Control',
+          description: 'Control deck com remoção e counterspells',
+          colors: ['Blue', 'Black'],
+          sampleList: '4 Gurmag Angler\n4 Counterspell\n4 Daze\n4 Force of Will\n4 Snuff Out\n4 Chainer\'s Edict\n4 Accumulated Knowledge\n4 Preordain',
+          metaTier: 'Tier 2'
+        },
+        {
+          id: 'golgari-midrange',
+          name: 'Golgari Midrange',
+          description: 'Midrange com criaturas grandes e remoção',
+          colors: ['Black', 'Green'],
+          sampleList: '4 Gurmag Angler\n4 Hooting Mandrills\n4 Chainer\'s Edict\n4 Snuff Out\n4 Putrefy\n4 Vines of Vastwood\n4 Thrill of Possibility\n4 Ancient Grudge',
+          metaTier: 'Tier 3'
+        },
+        {
+          id: 'azorius-affinity',
+          name: 'Azorius Affinity',
+          description: 'Combo deck com artefatos e metalcraft',
+          colors: ['White', 'Blue'],
+          sampleList: '4 Frogmite\n4 Myr Enforcer\n4 Ornithopter\n4 Somber Hoverguard\n4 Thoughtcast\n4 Galvanic Blast\n4 Dispatch\n4 Rush of Knowledge',
+          metaTier: 'Tier 1'
+        },
+        {
+          id: 'rakdos-goblins',
+          name: 'Rakdos Goblins',
+          description: 'Aggro deck baseado em goblins e go-wide strategy',
+          colors: ['Black', 'Red'],
+          sampleList: '4 Goblin Cohort\n4 Sparksmith\n4 Mogg Conscripts\n4 Goblin Bushwhacker\n4 Reckless Charge\n4 lightning Bolt\n4 Chain Lightning\n4 Goblin Grenade',
+          metaTier: 'Tier 3'
+        },
+        {
+          id: 'simic-merfolk',
+          name: 'Simic Merfolk',
+          description: 'Aggro com merfolk e sinergias de tribos',
+          colors: ['Blue', 'Green'],
+          sampleList: '4 Silvergill Adept\n4 Merfolk Looter\n4 Tidal Visionary\n4 Spreading Seas\n4 Aquitect\'s Will\n4 Daze\n4 Counterspell\n4 Ponder',
+          metaTier: 'Tier 3'
+        },
+        {
+          id: 'orzhov-midrange',
+          name: 'Orzhov Midrange',
+          description: 'Midrange com ganhos de vida e remoção eficiente',
+          colors: ['White', 'Black'],
+          sampleList: '4 Palace Sentinels\n4 Guardian of the Guildpact\n4 Journey to Nowhere\n4 Chainer\'s Edict\n4 Unmake\n4 Sign in Blood\n4 Thrill of Possibility\n4 Syndicate Trafficker',
+          metaTier: 'Tier 3'
+        },
+        {
+          id: 'jeskai-spells',
+          name: 'Jeskai Spells',
+          description: 'Control agressivo baseado em feitiços e poucas criaturas',
+          colors: ['White', 'Blue', 'Red'],
+          sampleList: '4 Delver of Secrets\n4 Kiln Fiend\n4 Wee Dragonauts\n4 Lightning Bolt\n4 Manamorphose\n4 Faithless Looting\n4 Ponder\n4 Preordain',
+          metaTier: 'Tier 2'
+        },
+        {
+          id: 'sultai-reanimator',
+          name: 'Sultai Reanimator',
+          description: 'Combo deck com reanimação de criaturas poderosas',
+          colors: ['Black', 'Blue', 'Green'],
+          sampleList: '4 Gurmag Angler\n4 Hooting Mandrills\n4 Grisly Salvage\n4 Satyr Wayfinder\n4 Careful Study\n4 Mulch\n4 Putrefy\n4 Vines of Vastwood',
+          metaTier: 'Tier 3'
+        },
+        {
+          id: '4-color-control',
+          name: '4-Color Control',
+          description: 'Control com muitas cores e ferramentas versáteis',
+          colors: ['White', 'Blue', 'Black', 'Red'],
+          sampleList: '4 Palace Sentinels\n4 Guardian of the Guildpact\n4 Counterspell\n4 Daze\n4 Lightning Bolt\n4 Prismatic Strands\n4 Putrefy\n4 Tragic Slip',
+          metaTier: 'Tier 3'
+        },
+        {
+          id: '5-color-good-stuff',
+          name: '5-Color Good Stuff',
+          description: 'Midrange com as melhores cartas de todas as cores',
+          colors: ['White', 'Blue', 'Black', 'Red', 'Green'],
+          sampleList: '4 Palace Sentinels\n4 Guardian of the Guildpact\n4 Mundis, Shroud-King\'s Envoy\n4 Tribe Elder\n4 Manamorphose\n4 Abundant Growth\n4 Tribal Unity',
+          metaTier: 'Tier 3'
+        }
       ]
     };
   }
