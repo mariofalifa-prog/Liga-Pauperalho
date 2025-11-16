@@ -1274,7 +1274,12 @@ class AdminManager {
     if (form) {
       form.addEventListener('submit', (e) => {
         e.preventDefault();
-        this.saveArchetype();
+        const archetypeId = document.getElementById('archetypeId');
+        if (archetypeId) {
+          this.updateArchetype();
+        } else {
+          this.saveArchetype();
+        }
       });
     }
   }
