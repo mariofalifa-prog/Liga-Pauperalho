@@ -16,7 +16,7 @@ class LeagueManager {
 
   // Bind event listeners
   bindEvents() {
-    // League registration form
+    // League registration form (old one, might still exist)
     const leagueRegistrationForm = document.getElementById('leagueRegistrationForm');
     if (leagueRegistrationForm) {
       leagueRegistrationForm.addEventListener('submit', (e) => {
@@ -25,12 +25,36 @@ class LeagueManager {
       });
     }
 
-    // Primary and secondary CTAs
-    const primaryCTA = document.getElementById('primaryCTA');
+    // Hero registration form
+    const heroRegistrationForm = document.getElementById('heroRegistrationForm');
+    if (heroRegistrationForm) {
+      heroRegistrationForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleHeroRegistration();
+      });
+    }
+
+    // Hero registration buttons
+    const heroRegisterBtn = document.getElementById('heroRegisterBtn');
+    const closeHeroRegistration = document.getElementById('closeHeroRegistration');
+    const cancelHeroRegistration = document.getElementById('cancelHeroRegistration');
+    const discordBtn = document.getElementById('discordBtn');
     const secondaryCTA = document.getElementById('secondaryCTA');
 
-    if (primaryCTA) {
-      primaryCTA.addEventListener('click', () => this.handlePrimaryCTA());
+    if (heroRegisterBtn) {
+      heroRegisterBtn.addEventListener('click', () => this.showHeroRegistrationForm());
+    }
+
+    if (closeHeroRegistration) {
+      closeHeroRegistration.addEventListener('click', () => this.hideHeroRegistrationForm());
+    }
+
+    if (cancelHeroRegistration) {
+      cancelHeroRegistration.addEventListener('click', () => this.hideHeroRegistrationForm());
+    }
+
+    if (discordBtn) {
+      discordBtn.addEventListener('click', () => this.handleDiscordButtonClick());
     }
 
     if (secondaryCTA) {
@@ -39,8 +63,24 @@ class LeagueManager {
 
     // Deck archetype change
     const deckArchetype = document.getElementById('deckArchetype');
+    const heroDeckArchetype = document.getElementById('heroDeckArchetype');
+
     if (deckArchetype) {
       deckArchetype.addEventListener('change', () => this.updateDeckPreview());
+    }
+
+    if (heroDeckArchetype) {
+      heroDeckArchetype.addEventListener('change', () => this.updateHeroDeckPreview());
+    }
+
+    // Close overlay when clicking outside
+    const heroRegistrationOverlay = document.getElementById('heroRegistrationOverlay');
+    if (heroRegistrationOverlay) {
+      heroRegistrationOverlay.addEventListener('click', (e) => {
+        if (e.target === heroRegistrationOverlay) {
+          this.hideHeroRegistrationForm();
+        }
+      });
     }
   }
 
