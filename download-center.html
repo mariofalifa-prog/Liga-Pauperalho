@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Download - Liga Pauperalho</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .download-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border-left: 5px solid #007bff;
+        }
+
+        .download-section h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .download-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .download-item:hover {
+            border-color: #007bff;
+            box-shadow: 0 5px 15px rgba(0,123,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-description {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .download-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .download-btn:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .complete-download {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .complete-download h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .btn-large {
+            background: white;
+            color: #28a745;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-large:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255,255,255,0.3);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .status-fixed {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-test {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .file-size {
+            color: #888;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+
+        .instructions {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .instructions h3 {
+            color: #0c5460;
+            margin-bottom: 15px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            color: #0c5460;
+        }
+
+        .instructions li {
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .download-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-download"></i> Centro de Download</h1>
+            <p>Liga Pauperalho - Projeto Completo e 100% Funcional</p>
+        </div>
+
+        <div class="content">
+            <!-- Download Completo -->
+            <div class="complete-download">
+                <h3><i class="fas fa-rocket"></i> Download Completo do Projeto</h3>
+                <p>Todos os arquivos do site, incluindo correções e ferramentas de diagnóstico</p>
+                <button class="btn-large" onclick="downloadCompletePackage()">
+                    <i class="fas fa-download"></i>
+                    Baixar Pacote Completo
+                </button>
+            </div>
+
+            <!-- Instruções -->
+            <div class="instructions">
+                <h3><i class="fas fa-info-circle"></i> Como Usar os Arquivos</h3>
+                <ol>
+                    <li><strong>Opção 1 - Download Completo:</strong> Clique no botão acima para baixar todos os arquivos de uma vez</li>
+                    <li><strong>Opção 2 - Download Individual:</strong> Use os links abaixo para baixar arquivos específicos</li>
+                    <li><strong>Como executar:</strong> Após baixar, abra <code>index.html</code> no navegador</li>
+                    <li><strong>Servidor local:</strong> Execute <code>python3 -m http.server 8000</code> na pasta</li>
+                    <li><strong>Login:</strong> Email: admin@pauperalho.com | Senha: admin123</li>
+                </ol>
+            </div>
+
+            <!-- Arquivos Principais -->
+            <div class="download-section">
+                <h2><i class="fas fa-star"></i> Arquivos Principais</h2>
+                <div class="download-grid">
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-home"></i>
+                                index.html
+                                <span class="status-badge status-fixed">PRINCIPAL</span>
+                            </div>
+                            <div class="file-description">Site principal da Liga Pauperalho</div>
+                        </div>
+                        <a href="index.html" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-stethoscope"></i>
+                                site-diagnostic.html
+                                <span class="status-badge status-test">DIAGNÓSTICO</span>
+                            </div>
+                            <div class="file-description">Ferramenta completa de diagnóstico do site</div>
+                        </div>
+                        <a href="site-diagnostic.html" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-sign-in-alt"></i>
+                                test-login.html
+                                <span class="status-badge status-test">TESTE</span>
+                            </div>
+                            <div class="file-description">Teste específico para login e autenticação</div>
+                        </div>
+                        <a href="test-login.html" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-cogs"></i>
+                                admin-functionality-test.html
+                                <span class="status-badge status-test">TESTE</span>
+                            </div>
+                            <div class="file-description">Teste completo do painel administrativo</div>
+                        </div>
+                        <a href="admin-functionality-test.html" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arquivos CSS -->
+            <div class="download-section">
+                <h2><i class="fas fa-palette"></i> Arquivos CSS</h2>
+                <div class="download-grid">
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-file-css"></i>
+                                css/main.css
+                            </div>
+                            <div class="file-description">Estilos principais e layout</div>
+                        </div>
+                        <a href="css/main.css" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-puzzle-piece"></i>
+                                css/components.css
+                            </div>
+                            <div class="file-description">Componentes e elementos da UI</div>
+                        </div>
+                        <a href="css/components.css" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-mobile-alt"></i>
+                                css/responsive.css
+                            </div>
+                            <div class="file-description">Estilos responsivos para mobile</div>
+                        </div>
+                        <a href="css/responsive.css" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-magic"></i>
+                                css/animations.css
+                            </div>
+                            <div class="file-description">Animações e efeitos visuais</div>
+                        </div>
+                        <a href="css/animations.css" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arquivos JavaScript -->
+            <div class="download-section">
+                <h2><i class="fas fa-code"></i> Arquivos JavaScript</h2>
+                <div class="download-grid">
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-cog"></i>
+                                js/utils.js
+                            </div>
+                            <div class="file-description">Funções utilitárias e helpers</div>
+                        </div>
+                        <a href="js/utils.js" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-database"></i>
+                                js/data.js
+                            </div>
+                            <div class="file-description">Gerenciamento de dados e storage</div>
+                        </div>
+                        <a href="js/data.js" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-user-shield"></i>
+                                js/auth.js
+                            </div>
+                            <div class="file-description">Sistema de autenticação e login</div>
+                        </div>
+                        <a href="js/auth.js" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-trophy"></i>
+                                js/league.js
+                            </div>
+                            <div class="file-description">Gestão da liga e temporadas</div>
+                        </div>
+                        <a href="js/league.js" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-gamepad"></i>
+                                js/games.js
+                            </div>
+                            <div class="file-description">Gestão de jogos e resultados</div>
+                        </div>
+                        <a href="js/games.js" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-list-ol"></i>
+                                js/rankings.js
+                            </div>
+                            <div class="file-description">Sistema de classificação e ranking</div>
+                        </div>
+                        <a href="js/rankings.js" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-cogs"></i>
+                                js/admin.js
+                            </div>
+                            <div class="file-description">Painel administrativo completo</div>
+                        </div>
+                        <a href="js/admin.js" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-rocket"></i>
+                                js/app.js
+                            </div>
+                            <div class="file-description">Aplicação principal e inicialização</div>
+                        </div>
+                        <a href="js/app.js" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documentação -->
+            <div class="download-section">
+                <h2><i class="fas fa-book"></i> Documentação</h2>
+                <div class="download-grid">
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-info-circle"></i>
+                                README.md
+                            </div>
+                            <div class="file-description">Documentação do projeto</div>
+                        </div>
+                        <a href="README.md" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+
+                    <div class="download-item">
+                        <div class="file-info">
+                            <div class="file-name">
+                                <i class="fas fa-clipboard-check"></i>
+                                IMPLEMENTATION_SUMMARY.md
+                            </div>
+                            <div class="file-description">Resumo da implementação e correções</div>
+                        </div>
+                        <a href="IMPLEMENTATION_SUMMARY.md" download class="download-btn">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status do Projeto -->
+            <div class="download-section" style="border-left-color: #28a745;">
+                <h2 style="color: #28a745;"><i class="fas fa-check-circle"></i> Status do Projeto</h2>
+                <div style="background: white; padding: 20px; border-radius: 8px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 2em; color: #28a745;">✅</div>
+                            <div style="font-weight: bold;">Erros JavaScript</div>
+                            <div style="color: #666;">100% Corrigidos</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 2em; color: #28a745;">✅</div>
+                            <div style="font-weight: bold;">Login Admin</div>
+                            <div style="color: #666;">Funcionando</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 2em; color: #28a745;">✅</div>
+                            <div style="font-weight: bold;">Painel Admin</div>
+                            <div style="color: #666;">100% Operacional</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 2em; color: #28a745;">✅</div>
+                            <div style="font-weight: bold;">Sistema Top 8</div>
+                            <div style="color: #666;">Implementado</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadCompletePackage() {
+            // Criar lista de todos os arquivos
+            const files = [
+                'index.html',
+                'site-diagnostic.html',
+                'test-login.html',
+                'admin-functionality-test.html',
+                'css/main.css',
+                'css/components.css',
+                'css/responsive.css',
+                'css/animations.css',
+                'js/utils.js',
+                'js/data.js',
+                'js/auth.js',
+                'js/league.js',
+                'js/games.js',
+                'js/rankings.js',
+                'js/admin.js',
+                'js/app.js',
+                'README.md',
+                'IMPLEMENTATION_SUMMARY.md'
+            ];
+
+            // Fazer download de cada arquivo
+            files.forEach((file, index) => {
+                setTimeout(() => {
+                    const link = document.createElement('a');
+                    link.href = file;
+                    link.download = file.split('/').pop();
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }, index * 200); // 200ms de delay entre downloads
+            });
+
+            // Mostrar notificação
+            alert('🚀 Iniciando download de ' + files.length + ' arquivos!\n\nOs arquivos serão baixados automaticamente.\nVerifique sua pasta de downloads.');
+        }
+
+        // Adicionar contadores de status
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📁 Centro de Download carregado');
+            console.log('📊 Status: Projeto 100% funcional e pronto para uso');
+        });
+    </script>
+</body>
+</html>
