@@ -1362,6 +1362,155 @@ class DataManager {
     return rankings;
   }
 
+  // Rules Management Methods
+  createRule(ruleData) {
+    const newRule = {
+      id: Utils.generateUUID(),
+      title: Utils.sanitizeInput(ruleData.title),
+      content: Utils.sanitizeInput(ruleData.content || ''),
+      category: Utils.sanitizeInput(ruleData.category || 'geral'),
+      priority: ruleData.priority || 'medium',
+      important: ruleData.important || false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    // Validate required fields
+    if (!newRule.title || newRule.title.trim() === '') {
+      throw new Error('Título da regra é obrigatório');
+    }
+
+    if (!newRule.content || newRule.content.trim() === '') {
+      throw new Error('Conteúdo da regra é obrigatório');
+    }
+
+    // Validate priority
+    const validPriorities = ['low', 'medium', 'high'];
+    if (!validPriorities.includes(newRule.priority)) {
+      newRule.priority = 'medium';
+    }
+
+    // Validate category
+    const validCategories = ['formato', 'estrutura', 'pontuacao', 'inscricoes', 'partidas', 'desempate', 'playoffs', 'conduta', 'suporte', 'geral'];
+    if (!validCategories.includes(newRule.category)) {
+      newRule.category = 'geral';
+    }
+
+    this.data.settings.rules.push(newRule);
+    this.saveData();
+    return newRule;
+  }
+
+  updateRule(ruleId, updates) {
+    const ruleIndex = this.data.settings.rules.findIndex(rule => rule.id === ruleId);
+
+    if (ruleIndex === -1) {
+      throw new Error('Regra não encontrada');
+    }
+
+    const updatedRule = {
+      ...this.data.settings.rules[ruleIndex],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+
+    // Sanitize string fields
+    if (updatedRule.title) updatedRule.title = Utils.sanitizeInput(updatedRule.title);
+    if (updatedRule.content) updatedRule.content = Utils.sanitizeInput(updatedRule.content);
+    if (updatedRule.category) updatedRule.category = Utils.sanitizeInput(updatedRule.category);
+
+    // Validate required fields
+    if (!updatedRule.title || updatedRule.title.trim() === '') {
+      throw new Error('Título da regra é obrigatório');
+    }
+
+    if (!updatedRule.content || updatedRule.content.trim() === '') {
+      throw new Error('Conteúdo da regra é obrigatório');
+    }
+
+    // Validate priority if provided
+    if (updates.priority) {
+      const validPriorities = ['low', 'medium', 'high'];
+      if (!validPriorities.includes(updatedRule.priority)) {
+        throw new Error('Prioridade inválida. Use: low, medium ou high');
+      }
+    }
+
+    // Validate category if provided
+    if (updates.category) {
+      const validCategories = ['formato', 'estrutura', 'pontuacao', 'inscricoes', 'partidas', 'desempate', 'playoffs', 'conduta', 'suporte', 'geral'];
+      if (!validCategories.includes(updatedRule.category)) {
+        throw new Error('Categoria inválida');
+      }
+    }
+
+    this.data.settings.rules[ruleIndex] = updatedRule;
+    this.saveData();
+    return updatedRule;
+  }
+
+  deleteRule(ruleId) {
+    const ruleIndex = this.data.settings.rules.findIndex(rule => rule.id === ruleId);
+
+    if (ruleIndex === -1) {
+      throw new Error('Regra não encontrada');
+    }
+
+    const deletedRule = this.data.settings.rules.splice(ruleIndex, 1)[0];
+    this.saveData();
+    return deletedRule;
+  }
+
+  getRule(ruleId) {
+    return this.data.settings.rules.find(rule => rule.id === ruleId);
+  }
+
+  getAllRules() {
+    return [...this.data.settings.rules];
+  }
+
+  getRulesByCategory(category) {
+    return this.data.settings.rules.filter(rule => rule.category === category);
+  }
+
+  getRulesByPriority(priority) {
+    return this.data.settings.rules.filter(rule => rule.priority === priority);
+  }
+
+  getImportantRules() {
+    return this.data.settings.rules.filter(rule => rule.important);
+  }
+
+  searchRules(query) {
+    const searchTerm = query.toLowerCase();
+    return this.data.settings.rules.filter(rule =>
+      rule.title.toLowerCase().includes(searchTerm) ||
+      rule.content.toLowerCase().includes(searchTerm) ||
+      rule.category.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  reorderRules(ruleIds) {
+    const orderedRules = [];
+    const ruleMap = new Map(this.data.settings.rules.map(rule => [rule.id, rule]));
+
+    ruleIds.forEach(id => {
+      if (ruleMap.has(id)) {
+        orderedRules.push(ruleMap.get(id));
+        ruleMap.delete(id);
+      }
+    });
+
+    // Add any remaining rules that weren't in the reorder list
+    ruleMap.forEach(rule => {
+      orderedRules.push(rule);
+    });
+
+    this.data.settings.rules = orderedRules;
+    this.saveData();
+    return orderedRules;
+  }
+
   getStorageInfo() {
     const usage = Utils.getLocalStorageUsage();
     return {
@@ -1372,6 +1521,7 @@ class DataManager {
       notificationCount: this.data.notifications.length,
       archivedLeagues: this.data.leagues.archived.length,
       archetypeCount: this.data.settings.deckArchetypes.length,
+      rulesCount: this.data.settings.rules.length,
       hasManualTop8: this.hasManualTop8(),
       version: this.data.version
     };
