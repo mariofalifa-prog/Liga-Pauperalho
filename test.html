@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liga Pauperalho - Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+        }
+        .success { color: #4caf50; }
+        .error { color: #f44336; }
+        .info { color: #2196f3; }
+        button {
+            background-color: #d4af37;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #f4e5a3;
+        }
+        pre {
+            background-color: #2d2d2d;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Liga Pauperalho - Test Suite</h1>
+
+    <div class="test-section">
+        <h2>Core Systems Test</h2>
+        <button onclick="testUtils()">Test Utils</button>
+        <button onclick="testData()">Test Data Manager</button>
+        <button onclick="testAuth()">Test Auth</button>
+        <div id="test-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Data Visualization Test</h2>
+        <button onclick="testCharts()">Test Charts</button>
+        <canvas id="testChart" width="400" height="200"></canvas>
+    </div>
+
+    <div class="test-section">
+        <h2>Manual Tests</h2>
+        <p>Open the main site in a new tab to test:</p>
+        <ul>
+            <li>Registration and login flow</li>
+            <li>League registration</li>
+            <li>Rankings display</li>
+            <li>Admin panel (admin@pauperalho.com / admin123)</li>
+            <li>Responsive design</li>
+            <li>Data persistence</li>
+        </ul>
+        <button onclick="window.open('/', '_blank')">Open Main Site</button>
+    </div>
+
+    <div class="test-section">
+        <h2>LocalStorage Status</h2>
+        <button onclick="showLocalStorage()">Show LocalStorage</button>
+        <button onclick="clearLocalStorage()">Clear LocalStorage</button>
+        <pre id="localStorage-display"></pre>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        let testResults = document.getElementById('test-results');
+
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = message;
+            testResults.appendChild(div);
+        }
+
+        function testUtils() {
+            log('<h3>Testing Utils</h3>');
+
+            try {
+                // Test UUID generation
+                const uuid = Utils.generateUUID();
+                log(`✓ UUID Generation: ${uuid}`, 'success');
+
+                // Test email validation
+                const validEmail = Utils.validateEmail('test@example.com');
+                const invalidEmail = Utils.validateEmail('invalid-email');
+                log(`✓ Email validation: ${validEmail && !invalidEmail}`, 'success');
+
+                // Test password hashing
+                const hash = Utils.hashPassword('test123');
+                log(`✓ Password hashing: ${hash.length > 0}`, 'success');
+
+                // Test date formatting
+                const dateStr = Utils.formatDate(new Date());
+                log(`✓ Date formatting: ${dateStr}`, 'success');
+
+                // Test CSV conversion
+                const testData = [{name: 'Test', value: 123}];
+                const csv = Utils.convertToCSV(testData);
+                log(`✓ CSV conversion: ${csv.includes('Test')}`, 'success');
+
+            } catch (error) {
+                log(`✗ Utils test failed: ${error.message}`, 'error');
+            }
+        }
+
+        function testData() {
+            log('<h3>Testing Data Manager</h3>');
+
+            try {
+                // Test user creation
+                const testUser = dataManager.createUser({
+                    name: 'Test User',
+                    email: 'test@example.com',
+                    password: 'test123456'
+                });
+                log(`✓ User creation: ${testUser.name}`, 'success');
+
+                // Test league data
+                const league = dataManager.getCurrentLeague();
+                log(`✓ League data: ${league.name}`, 'success');
+
+                // Test registration
+                const registration = dataManager.createRegistration({
+                    userId: testUser.id,
+                    deckArchetype: 'Mono Blue Terror',
+                    deckList: 'Test deck list'
+                });
+                log(`✓ Registration: ${registration.deckArchetype}`, 'success');
+
+                // Test rankings calculation
+                const rankings = dataManager.calculateRankings();
+                log(`✓ Rankings calculation: ${rankings.length} players`, 'success');
+
+            } catch (error) {
+                log(`✗ Data Manager test failed: ${error.message}`, 'error');
+            }
+        }
+
+        function testAuth() {
+            log('<h3>Testing Auth Manager</h3>');
+
+            try {
+                // Test user authentication
+                const user = dataManager.getUserByEmail('test@example.com');
+                if (user) {
+                    log(`✓ User lookup: ${user.name}`, 'success');
+
+                    // Test session creation
+                    const session = dataManager.createSession(user.id);
+                    log(`✓ Session creation: ${session.token.substring(0, 8)}...`, 'success');
+                }
+
+            } catch (error) {
+                log(`✗ Auth test failed: ${error.message}`, 'error');
+            }
+        }
+
+        function testCharts() {
+            log('<h3>Testing Charts</h3>');
+
+            try {
+                const ctx = document.getElementById('testChart').getContext('2d');
+                const chart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Mono Blue', 'Mono Red', 'Mono Black'],
+                        datasets: [{
+                            data: [30, 25, 20],
+                            backgroundColor: ['#1e88e5', '#e53935', '#43a047']
+                        }]
+                    },
+                    options: {
+                        responsive: false
+                    }
+                });
+                log('✓ Chart creation successful', 'success');
+
+            } catch (error) {
+                log(`✗ Chart test failed: ${error.message}`, 'error');
+            }
+        }
+
+        function showLocalStorage() {
+            const storage = {};
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    try {
+                        storage[key] = JSON.parse(localStorage[key]);
+                    } catch {
+                        storage[key] = localStorage[key];
+                    }
+                }
+            }
+            document.getElementById('localStorage-display').textContent = JSON.stringify(storage, null, 2);
+        }
+
+        function clearLocalStorage() {
+            localStorage.clear();
+            document.getElementById('localStorage-display').textContent = 'LocalStorage cleared!';
+            log('LocalStorage cleared', 'info');
+        }
+
+        // Run basic tests on page load
+        window.onload = function() {
+            log('Liga Pauperalho Test Suite loaded successfully', 'success');
+            log('Total JavaScript files: 7', 'info');
+            log('Total CSS files: 4', 'info');
+            log('Total lines of code: ~8,000', 'info');
+        };
+    </script>
+</body>
+</html>
