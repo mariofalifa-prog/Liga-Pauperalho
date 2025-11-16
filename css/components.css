@@ -1460,3 +1460,221 @@ input[type="radio"]:checked::after {
 .pb-0 { padding-bottom: 0 !important; }
 .pl-0 { padding-left: 0 !important; }
 .pr-0 { padding-right: 0 !important; }
+
+/* Modern Enhanced Visual Effects */
+.glow-effect {
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
+}
+
+.glass-morphism {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modern-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.neon-text {
+    text-shadow: 0 0 10px rgba(147, 51, 234, 0.8);
+}
+
+/* Enhanced Button Styles */
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+/* Modern Card Enhancements */
+.card {
+    position: relative;
+    overflow: hidden;
+}
+
+.card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    transform: rotate(45deg);
+    transition: all 0.5s;
+    opacity: 0;
+}
+
+.card:hover::after {
+    animation: cardShine 0.5s ease-in-out;
+}
+
+@keyframes cardShine {
+    0% {
+        transform: rotate(45deg) translateY(-100%);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: rotate(45deg) translateY(100%);
+        opacity: 0;
+    }
+}
+
+/* Enhanced Form Elements */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+    border-color: #9333ea;
+}
+
+/* Modern Modal Styles */
+.modal-container {
+    background: linear-gradient(135deg, var(--color-secondary-dark) 0%, rgba(147, 51, 234, 0.1) 100%);
+    border: 1px solid rgba(147, 51, 234, 0.3);
+}
+
+/* Enhanced Status Badges */
+.status-badge {
+    position: relative;
+    overflow: hidden;
+}
+
+.status-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.3s;
+}
+
+.status-badge:hover::before {
+    left: 100%;
+}
+
+/* Modern Table Styles */
+.table {
+    position: relative;
+    overflow: hidden;
+}
+
+.table::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #9333ea, transparent);
+    animation: tableGlow 3s ease-in-out infinite;
+}
+
+@keyframes tableGlow {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Enhanced Loading States */
+.loading-spinner {
+    position: relative;
+}
+
+.loading-spinner::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: conic-gradient(from 0deg, transparent, #9333ea, transparent);
+    border-radius: 50%;
+    animation: spinnerBorder 1s linear infinite;
+    z-index: -1;
+}
+
+@keyframes spinnerBorder {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Modern Notification Styles */
+.notification {
+    border-left: 4px solid;
+    position: relative;
+    overflow: hidden;
+}
+
+.notification::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, transparent, currentColor, transparent);
+    animation: notificationPulse 2s ease-in-out infinite;
+}
+
+@keyframes notificationPulse {
+    0%, 100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Enhanced Progress Bar */
+.progress-fill {
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    animation: progressShine 2s infinite;
+}
+
+@keyframes progressShine {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
