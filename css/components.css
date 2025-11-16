@@ -1077,6 +1077,31 @@ input[type="radio"]:checked::after {
   }
 }
 
+/* Rules Section Styling */
+.rule-section.important-rule {
+  border: 2px solid var(--color-gold-accent);
+  box-shadow: var(--shadow-gold);
+  background: linear-gradient(135deg,
+    var(--color-secondary-dark) 0%,
+    rgba(212, 175, 55, 0.1) 100%);
+}
+
+.rule-section.important-rule h3 {
+  color: var(--color-gold-accent);
+  font-size: var(--font-size-xl);
+}
+
+.rule-section.important-rule p {
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+.rule-section.important-rule p strong {
+  color: var(--color-gold-accent);
+  font-weight: var(--font-weight-bold);
+}
+
 /* Utility Classes */
 .hidden {
   display: none !important;
