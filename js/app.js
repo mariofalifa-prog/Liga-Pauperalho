@@ -113,7 +113,6 @@ class LigaApp {
     // Define route handlers
     this.routes = {
       'home': () => this.showSection('home'),
-      'registration': () => this.handleRegistrationRoute(),
       'rankings': () => this.handleRankingsRoute(),
       'rules': () => this.showSection('rules'),
       'decklists': () => this.handleDecklistsRoute(),
