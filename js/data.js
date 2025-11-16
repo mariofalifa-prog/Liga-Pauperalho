@@ -670,6 +670,7 @@ class DataManager {
       let losses = 0;
       let totalPoints = 0;
       const opponentIds = new Set();
+      const headToHeadRecord = {};
 
       userGames.forEach(game => {
         const isPlayer1 = game.player1Id === registration.userId;
@@ -678,6 +679,12 @@ class DataManager {
         const opponentId = isPlayer1 ? game.player2Id : game.player1Id;
 
         opponentIds.add(opponentId);
+
+        // Track head to head
+        headToHeadRecord[opponentId] = {
+          wins: (headToHeadRecord[opponentId]?.wins || 0) + playerWins,
+          losses: (headToHeadRecord[opponentId]?.losses || 0) + opponentWins
+        };
 
         wins += playerWins;
         losses += opponentWins;
@@ -701,30 +708,79 @@ class DataManager {
         totalPoints,
         winRate,
         opponentWinPercentage,
-        strengthOfSchedule: opponentWinPercentage // Simplified strength of schedule
+        headToHeadRecord,
+        strengthOfSchedule: opponentWinPercentage
       };
     });
 
-    // Sort rankings
+    // Sort rankings using the specified criteria
     rankings.sort((a, b) => {
+      // 1. Quantidade de pontos
       if (b.totalPoints !== a.totalPoints) {
         return b.totalPoints - a.totalPoints;
       }
+
+      // 2. Percentagem de jogos ganhos
       if (b.winRate !== a.winRate) {
         return b.winRate - a.winRate;
       }
-      if (b.opponentWinPercentage !== a.opponentWinPercentage) {
-        return b.opponentWinPercentage - a.opponentWinPercentage;
+
+      // 3. Maior número de jogos ganhos
+      if (b.wins !== a.wins) {
+        return b.wins - a.wins;
       }
+
+      // 4. Menor número de jogos perdidos
+      if (a.losses !== b.losses) {
+        return a.losses - b.losses;
+      }
+
+      // 5. Vencedor em confronto directo
+      const headToHeadResult = this.resolveHeadToHead(a, b);
+      if (headToHeadResult !== 0) {
+        return headToHeadResult;
+      }
+
+      // 6. Empate - mantém ordem atual
       return 0;
     });
 
-    // Assign ranks
+    // Assign ranks (handling ties)
+    let currentRank = 1;
     rankings.forEach((ranking, index) => {
-      ranking.rank = index + 1;
+      if (index === 0) {
+        ranking.rank = currentRank;
+      } else {
+        const prevRanking = rankings[index - 1];
+        if (ranking.totalPoints === prevRanking.totalPoints &&
+            ranking.winRate === prevRanking.winRate &&
+            ranking.wins === prevRanking.wins &&
+            ranking.losses === prevRanking.losses) {
+          // Same criteria, same rank
+          ranking.rank = prevRanking.rank;
+        } else {
+          // Different criteria, increment rank
+          currentRank = index + 1;
+          ranking.rank = currentRank;
+        }
+      }
     });
 
     return rankings;
+  }
+
+  // Resolve head to head between two players
+  resolveHeadToHead(playerA, playerB) {
+    // Check if A has record against B
+    if (playerA.headToHeadRecord[playerB.userId]) {
+      const aRecord = playerA.headToHeadRecord[playerB.userId];
+      const bRecord = playerB.headToHeadRecord[playerA.userId];
+
+      if (aRecord.wins > bRecord.wins) return -1; // A wins
+      if (aRecord.wins < bRecord.wins) return 1;  // B wins
+    }
+
+    return 0; // No head to head or tie
   }
 
   calculateOpponentWinPercentage(opponentIds, leagueId) {
