@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificação do Sistema Mensal - Liga Pauperalho</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-item {
+            margin: 15px 0;
+            padding: 10px;
+            border-left: 4px solid #ddd;
+            background: #f9f9f9;
+        }
+        .test-item.success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .test-item.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .test-item.info {
+            border-left-color: #17a2b8;
+            background: #d1ecf1;
+        }
+        .status {
+            font-weight: bold;
+        }
+        .details {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .console {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗓️ Verificação do Sistema Mensal</h1>
+        <p>Esta página verifica se todas as funcionalidades mensais estão implementadas corretamente.</p>
+
+        <button onclick="runVerification()">🔍 Executar Verificação Completa</button>
+        <button onclick="clearResults()">🧹 Limpar Resultados</button>
+
+        <div id="results"></div>
+        <div class="console" id="console">Aguardando verificação...\n</div>
+    </div>
+
+    <!-- Load the system -->
+    <script src="js/utils.js"></script>
+    <script src="js/data.js"></script>
+    <script src="monthly-league-enhancement.js"></script>
+
+    <script>
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            const consoleEl = document.getElementById('console');
+            consoleEl.innerHTML += `[${timestamp}] ${icon} ${message}\n`;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('console').innerHTML = 'Console limpo...\n';
+        }
+
+        function addTestResult(title, status, details = '') {
+            const resultsDiv = document.getElementById('results');
+            const testItem = document.createElement('div');
+            testItem.className = `test-item ${status}`;
+            testItem.innerHTML = `
+                <div class="status">${status === 'success' ? '✅' : status === 'error' ? '❌' : 'ℹ️'} ${title}</div>
+                ${details ? `<div class="details">${details}</div>` : ''}
+            `;
+            resultsDiv.appendChild(testItem);
+        }
+
+        function runVerification() {
+            log('🚀 Iniciando verificação completa do sistema mensal...');
+            clearResults();
+
+            setTimeout(() => {
+                // 1. Verificar carregamento dos módulos
+                log('Verificando carregamento de módulos...', 'info');
+
+                const hasUtils = typeof Utils !== 'undefined';
+                const hasDataManager = typeof dataManager !== 'undefined';
+                const hasMonthlyManager = typeof monthlyManager !== 'undefined';
+                const hasMonthlyClass = typeof MonthlyLeagueManager !== 'undefined';
+
+                if (hasUtils && hasDataManager && hasMonthlyManager && hasMonthlyClass) {
+                    addTestResult('Carregamento de Módulos', 'success', 'Todos os módulos essenciais carregados');
+                    log('✅ Todos os módulos carregados com sucesso', 'success');
+                } else {
+                    addTestResult('Carregamento de Módulos', 'error',
+                        `Utils: ${hasUtils ? '✅' : '❌'}, DataManager: ${hasDataManager ? '✅' : '❌'}, MonthlyManager: ${hasMonthlyManager ? '✅' : '❌'}`);
+                    log('❌ Falha no carregamento de módulos', 'error');
+                    return;
+                }
+
+                // 2. Verificar funcionalidades básicas
+                setTimeout(() => {
+                    log('Testando funcionalidades básicas...', 'info');
+
+                    try {
+                        // Testar funções de mês/ano
+                        const testDate = new Date();
+                        const monthYear = monthlyManager.getMonthYear(testDate);
+                        const leagueId = monthlyManager.getMonthlyLeagueId(testDate);
+
+                        if (monthYear && leagueId && monthYear.includes('2024')) {
+                            addTestResult('Funções de Mês/Ano', 'success', `Mês: ${monthYear}, ID: ${leagueId}`);
+                            log(`✅ Funções de mês/ano: ${monthYear} / ${leagueId}`, 'success');
+                        } else {
+                            addTestResult('Funções de Mês/Ano', 'error', 'Retorno inválido');
+                            log('❌ Falha nas funções de mês/ano', 'error');
+                        }
+
+                        // Testar acesso à liga mensal
+                        const currentLeague = monthlyManager.getCurrentMonthlyLeague();
+                        if (currentLeague) {
+                            addTestResult('Acesso à Liga Mensal', 'success',
+                                `Liga: ${currentLeague.name}, Status: ${currentLeague.status}`);
+                            log(`✅ Liga mensal atual: ${currentLeague.name}`, 'success');
+                        } else {
+                            addTestResult('Acesso à Liga Mensal', 'warning', 'Liga não encontrada (pode ser normal)');
+                            log('⚠️ Liga mensal atual não encontrada', 'warning');
+                        }
+
+                        // Testar todas as ligas
+                        const allLeagues = monthlyManager.getAllMonthlyLeagues();
+                        addTestResult('Lista de Ligas Mensais', 'info', `${Object.keys(allLeagues).length} ligas encontradas`);
+                        log(`📊 Total de ligas mensais: ${Object.keys(allLeagues).length}`, 'info');
+
+                    } catch (error) {
+                        addTestResult('Funcionalidades Básicas', 'error', error.message);
+                        log(`❌ Erro nas funcionalidades básicas: ${error.message}`, 'error');
+                    }
+                }, 500);
+
+                // 3. Verificar controle de visibilidade
+                setTimeout(() => {
+                    log('Testando controle de visibilidade de decklists...', 'info');
+
+                    try {
+                        const shouldBeVisible = monthlyManager.shouldShowDecklists();
+                        addTestResult('Controle de Visibilidade', 'info',
+                            `Decklists ${shouldBeVisible ? 'visíveis' : 'ocultas'}`);
+                        log(`👁️ Visibilidade de decklists: ${shouldBeVisible}`, 'info');
+
+                        // Testar toggle
+                        const currentMonth = monthlyManager.getMonthYear(new Date());
+                        const original = monthlyManager.shouldShowDecklists(currentMonth);
+
+                        if (monthlyManager.updateDecklistVisibility(currentMonth, !original)) {
+                            const toggled = monthlyManager.shouldShowDecklists(currentMonth);
+                            monthlyManager.updateDecklistVisibility(currentMonth, original); // restore
+                            addTestResult('Toggle de Visibilidade', 'success',
+                                `Toggle funcionou: ${original} → ${toggled} → ${original}`);
+                            log(`🔄 Toggle de visibilidade funcionou corretamente`, 'success');
+                        } else {
+                            addTestResult('Toggle de Visibilidade', 'warning', 'Não foi possível testar toggle');
+                            log('⚠️ Não foi possível testar toggle de visibilidade', 'warning');
+                        }
+
+                    } catch (error) {
+                        addTestResult('Controle de Visibilidade', 'error', error.message);
+                        log(`❌ Erro no controle de visibilidade: ${error.message}`, 'error');
+                    }
+                }, 1000);
+
+                // 4. Verificar categorização mensal
+                setTimeout(() => {
+                    log('Testando categorização mensal de dados...', 'info');
+
+                    try {
+                        const currentMonth = monthlyManager.getMonthYear(new Date());
+
+                        // Testar inscrições mensais
+                        const registrations = monthlyManager.getMonthlyRegistrations(currentMonth);
+                        addTestResult('Inscrições Mensais', 'info',
+                            `${registrations.length} inscrições encontradas`);
+                        log(`📝 Inscrições mensais: ${registrations.length}`, 'info');
+
+                        // Testar jogos mensais
+                        const games = monthlyManager.getMonthlyGames(currentMonth);
+                        addTestResult('Jogos Mensais', 'info',
+                            `${games.length} jogos encontrados`);
+                        log(`🎮 Jogos mensais: ${games.length}`, 'info');
+
+                        // Testar decklists mensais
+                        const decklists = monthlyManager.getMonthlyDecklists(currentMonth);
+                        addTestResult('Decklists Mensais', 'info',
+                            `${decklists.length} decklists encontradas`);
+                        log(`🃏 Decklists mensais: ${decklists.length}`, 'info');
+
+                        // Testar classificações
+                        const rankings = monthlyManager.calculateMonthlyRankings(currentMonth);
+                        addTestResult('Cálculo de Classificações', 'success',
+                            `${rankings.length} jogadores classificados`);
+                        log(`🏆 Classificações calculadas: ${rankings.length} jogadores`, 'success');
+
+                    } catch (error) {
+                        addTestResult('Categorização Mensal', 'error', error.message);
+                        log(`❌ Erro na categorização mensal: ${error.message}`, 'error');
+                    }
+                }, 1500);
+
+                // 5. Verificar funcionalidade de exportação
+                setTimeout(() => {
+                    log('Testando funcionalidade de exportação...', 'info');
+
+                    try {
+                        // Testar exportação de resultados
+                        const resultsExport = monthlyManager.exportLeagueResults();
+                        if (resultsExport && resultsExport.type === 'all_monthly_results') {
+                            addTestResult('Exportação de Resultados', 'success',
+                                `Tipo: ${resultsExport.type}, Meses: ${resultsExport.totalMonths}`);
+                            log(`📤 Exportação de resultados: ${resultsExport.totalMonths} meses`, 'success');
+                        } else {
+                            addTestResult('Exportação de Resultados', 'error', 'Estrutura inválida');
+                            log('❌ Exportação de resultados com estrutura inválida', 'error');
+                        }
+
+                        // Testar exportação de decklists
+                        const decklistExport = monthlyManager.exportMonthlyDecklists();
+                        if (decklistExport && decklistExport.type === 'all_monthly_decklists') {
+                            addTestResult('Exportação de Decklists', 'success',
+                                `Tipo: ${decklistExport.type}, Meses: ${decklistExport.totalMonths}`);
+                            log(`📤 Exportação de decklists: ${decklistExport.totalMonths} meses`, 'success');
+                        } else {
+                            addTestResult('Exportação de Decklists', 'error', 'Estrutura inválida');
+                            log('❌ Exportação de decklists com estrutura inválida', 'error');
+                        }
+
+                    } catch (error) {
+                        addTestResult('Funcionalidade de Exportação', 'error', error.message);
+                        log(`❌ Erro na exportação: ${error.message}`, 'error');
+                    }
+                }, 2000);
+
+                // 6. Testar adição de dados
+                setTimeout(() => {
+                    log('Testando adição de dados de teste...', 'info');
+
+                    try {
+                        // Testar adição de inscrição
+                        const testReg = monthlyManager.addMonthlyRegistration({
+                            userId: 'test-user-verification',
+                            deckArchetype: 'Mono Blue Terror',
+                            deckList: '4 Delver of Secrets\n4 Ponder\n4 Preordain'
+                        });
+                        addTestResult('Adicionar Inscrição', 'success',
+                            `ID: ${testReg.id}, Arquétipo: ${testReg.deckArchetype}`);
+                        log(`✅ Inscrição adicionada: ${testReg.deckArchetype}`, 'success');
+
+                        // Testar adição de jogo
+                        const testGame = monthlyManager.addMonthlyGame({
+                            player1Id: 'test-user-1',
+                            player2Id: 'test-user-2',
+                            player1Wins: 2,
+                            player2Wins: 1,
+                            player1Deck: 'Mono Blue Terror',
+                            player2Deck: 'Mono Red Burn'
+                        });
+                        addTestResult('Adicionar Jogo', 'success',
+                            `ID: ${testGame.id}, Vencedor: ${testGame.winner}`);
+                        log(`✅ Jogo adicionado: ${testGame.winner}`, 'success');
+
+                    } catch (error) {
+                        addTestResult('Adição de Dados', 'error', error.message);
+                        log(`❌ Erro ao adicionar dados: ${error.message}`, 'error');
+                    }
+                }, 2500);
+
+                // 7. Resumo final
+                setTimeout(() => {
+                    log('🏁 Verificação concluída!', 'success');
+
+                    const allTestItems = document.querySelectorAll('.test-item');
+                    const successCount = document.querySelectorAll('.test-item.success').length;
+                    const errorCount = document.querySelectorAll('.test-item.error').length;
+                    const infoCount = document.querySelectorAll('.test-item.info').length;
+                    const total = allTestItems.length;
+
+                    addTestResult('Resumo da Verificação', 'success',
+                        `Total: ${total} testes, Sucesso: ${successCount}, Erros: ${errorCount}, Info: ${infoCount}`);
+                    log(`📊 Resumo: ${total} testes, ${successCount} sucesso, ${errorCount} erros, ${infoCount} info`, 'success');
+
+                    if (errorCount === 0) {
+                        log('🎉 Todos os testes críticos passaram! Sistema mensal funcionando perfeitamente.', 'success');
+                        addTestResult('Status Final', 'success', 'Sistema mensal pronto para uso');
+                    } else {
+                        log('⚠️ Alguns testes falharam. Verifique os erros acima.', 'warning');
+                        addTestResult('Status Final', 'error', 'Há problemas a resolver');
+                    }
+
+                }, 3000);
+
+            }, 100);
+        }
+
+        // Auto-run on page load
+        window.addEventListener('load', () => {
+            log('Página de verificação carregada', 'success');
+            log('Clique em "Executar Verificação Completa" para testar o sistema', 'info');
+        });
+    </script>
+</body>
+</html>
