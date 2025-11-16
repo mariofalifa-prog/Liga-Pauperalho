@@ -1509,6 +1509,516 @@ class AdminManager {
     }
   }
 
+  // Load Top 8 management data
+  loadTop8Data() {
+    const top8Tab = document.getElementById('top8Tab');
+    if (!top8Tab) return;
+
+    const currentTop8 = dataManager.getManualTop8();
+    const rankings = dataManager.calculateRankings();
+    const hasManualTop8 = dataManager.hasManualTop8();
+
+    top8Tab.innerHTML = `
+      <div class="admin-controls card">
+        <div class="section-header">
+          <h3>Gerenciamento do Top 8</h3>
+          <div class="section-actions">
+            <button class="btn btn-primary" id="setTop8Btn">
+              <i class="fas fa-trophy"></i>
+              Definir Top 8 Manual
+            </button>
+            <button class="btn btn-outline" id="refreshTop8Btn">
+              <i class="fas fa-sync"></i>
+              Atualizar
+            </button>
+            ${hasManualTop8 ? `
+              <button class="btn btn-warning" id="clearTop8Btn">
+                <i class="fas fa-times"></i>
+                Limpar Top 8 Manual
+              </button>
+            ` : ''}
+          </div>
+        </div>
+
+        <div class="top8-status">
+          <div class="status-indicator ${hasManualTop8 ? 'manual' : 'auto'}">
+            <i class="fas ${hasManualTop8 ? 'fa-hand-paper' : 'fa-calculator'}"></i>
+            <span>Modo: ${hasManualTop8 ? 'Manual' : 'Automático (baseado na classificação)'}</span>
+          </div>
+          ${hasManualTop8 ? `
+            <div class="last-updated">
+              <i class="fas fa-clock"></i>
+              Última atualização: ${Utils.formatDateTime(new Date(currentTop8[0]?.setAt || Date.now()))}
+            </div>
+          ` : ''}
+        </div>
+
+        ${hasManualTop8 ? `
+          <div class="manual-top8-container">
+            <h4>Top 8 Manual</h4>
+            <div class="top8-players-grid">
+              ${currentTop8.map((player, index) => this.renderTop8Player(player, index)).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        <div class="suggested-top8">
+          <h4>Classificação Atual (Top 8 Automático)</h4>
+          <div class="rankings-preview">
+            ${rankings.slice(0, 8).map((player, index) => `
+              <div class="player-suggestion" data-player-id="${player.userId}">
+                <div class="position-badge">${index + 1}</div>
+                <div class="player-info">
+                  <span class="player-name">${Utils.escapeHtml(player.name)}</span>
+                  <span class="player-deck">${Utils.escapeHtml(player.deckArchetype)}</span>
+                  <span class="player-stats">${player.totalPoints} pts | ${player.wins}-${player.losses}</span>
+                </div>
+                <button class="btn btn-small btn-outline add-to-top8" data-player='${JSON.stringify(player)}'>
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+
+    this.bindTop8Events();
+  }
+
+  // Render Top 8 player card
+  renderTop8Player(player, index) {
+    const user = dataManager.getUserById(player.userId);
+    const userAvatar = app.getAvatarUrl(user);
+
+    return `
+      <div class="top8-player-card" data-position="${player.position}">
+        <div class="player-position">
+          <span class="position-number">${player.position}º</span>
+          <i class="fas fa-trophy position-trophy"></i>
+        </div>
+        <div class="player-content">
+          <img src="${userAvatar}" alt="${user.name}" class="player-avatar">
+          <div class="player-details">
+            <h5>${Utils.escapeHtml(user.profile.displayName || user.name)}</h5>
+            <p class="deck-info">${Utils.escapeHtml(player.deckArchetype)}</p>
+            <div class="player-stats">
+              <span class="stat">
+                <i class="fas fa-star"></i> ${player.totalPoints} pts
+              </span>
+              <span class="stat">
+                <i class="fas fa-chart-line"></i> ${player.wins}-${player.losses}
+              </span>
+              <span class="stat">
+                <i class="fas fa-percentage"></i> ${(player.winRate * 100).toFixed(1)}%
+              </span>
+            </div>
+          </div>
+          <div class="player-actions">
+            <button class="btn btn-small btn-outline edit-top8-player" data-position="${player.position}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-small btn-danger remove-top8-player" data-position="${player.position}">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Bind Top 8 events
+  bindTop8Events() {
+    // Set Top 8 button
+    const setTop8Btn = document.getElementById('setTop8Btn');
+    if (setTop8Btn) {
+      setTop8Btn.addEventListener('click', () => this.showSetTop8Modal());
+    }
+
+    // Clear Top 8 button
+    const clearTop8Btn = document.getElementById('clearTop8Btn');
+    if (clearTop8Btn) {
+      clearTop8Btn.addEventListener('click', () => this.clearManualTop8());
+    }
+
+    // Refresh button
+    const refreshTop8Btn = document.getElementById('refreshTop8Btn');
+    if (refreshTop8Btn) {
+      refreshTop8Btn.addEventListener('click', () => this.loadTop8Data());
+    }
+
+    // Add to Top 8 buttons
+    const addToTop8Btns = document.querySelectorAll('.add-to-top8');
+    addToTop8Btns.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const player = JSON.parse(e.currentTarget.dataset.player);
+        this.addPlayerToTop8(player);
+      });
+    });
+
+    // Edit Top 8 player buttons
+    const editButtons = document.querySelectorAll('.edit-top8-player');
+    editButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const position = parseInt(e.currentTarget.dataset.position);
+        this.editTop8Player(position);
+      });
+    });
+
+    // Remove Top 8 player buttons
+    const removeButtons = document.querySelectorAll('.remove-top8-player');
+    removeButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const position = parseInt(e.currentTarget.dataset.position);
+        this.removeTop8Player(position);
+      });
+    });
+  }
+
+  // Show set Top 8 modal
+  showSetTop8Modal() {
+    const rankings = dataManager.calculateRankings();
+
+    const modalHTML = `
+      <div class="top8-form-container">
+        <div class="form-header">
+          <i class="fas fa-trophy"></i>
+          <h3>Definir Top 8 Manual</h3>
+          <p>Selecione os 8 melhores jogadores para o Top 8</p>
+        </div>
+        <form id="top8Form" class="auth-form">
+          <div class="top8-selector">
+            <div class="current-selection">
+              <h4>Seleção Atual (0/8)</h4>
+              <div class="selected-players" id="selectedPlayers">
+                <p class="empty-selection">Nenhum jogador selecionado</p>
+              </div>
+            </div>
+            <div class="available-players">
+              <h4>Jogadores Disponíveis</h4>
+              <div class="player-list">
+                ${rankings.slice(0, 16).map((player, index) => `
+                  <label class="player-checkbox">
+                    <input type="checkbox" name="top8Players" value="${player.userId}" data-player='${JSON.stringify(player)}'>
+                    <div class="player-card-small">
+                      <div class="player-rank">${index + 1}</div>
+                      <div class="player-info">
+                        <span class="player-name">${Utils.escapeHtml(player.name)}</span>
+                        <span class="player-deck">${Utils.escapeHtml(player.deckArchetype)}</span>
+                        <span class="player-stats">${player.totalPoints} pts | ${player.wins}-${player.losses}</span>
+                      </div>
+                    </div>
+                  </label>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-trophy"></i>
+              Definir Top 8
+            </button>
+            <button type="button" class="btn btn-outline" onclick="app.closeModal()">
+              <i class="fas fa-times"></i>
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    app.showModal('Definir Top 8', modalHTML);
+    this.bindTop8FormEvents();
+  }
+
+  // Bind Top 8 form events
+  bindTop8FormEvents() {
+    const form = document.getElementById('top8Form');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleTop8FormSubmission();
+      });
+    }
+
+    // Handle checkbox changes
+    const checkboxes = document.querySelectorAll('input[name="top8Players"]');
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', () => this.updateTop8Selection());
+    });
+  }
+
+  // Update Top 8 selection display
+  updateTop8Selection() {
+    const selectedCheckboxes = document.querySelectorAll('input[name="top8Players"]:checked');
+    const selectedPlayersDiv = document.getElementById('selectedPlayers');
+    const currentSelectionH4 = document.querySelector('.current-selection h4');
+
+    currentSelectionH4.textContent = `Seleção Atual (${selectedCheckboxes.length}/8)`;
+
+    if (selectedCheckboxes.length === 0) {
+      selectedPlayersDiv.innerHTML = '<p class="empty-selection">Nenhum jogador selecionado</p>';
+      return;
+    }
+
+    const selectedHTML = Array.from(selectedCheckboxes).map((checkbox, index) => {
+      const player = JSON.parse(checkbox.dataset.player);
+      const user = dataManager.getUserById(player.userId);
+      return `
+        <div class="selected-player">
+          <span class="position">${index + 1}</span>
+          <img src="${app.getAvatarUrl(user)}" alt="${user.name}" class="avatar-small">
+          <span class="name">${Utils.escapeHtml(user.profile.displayName || user.name)}</span>
+          <span class="deck">${Utils.escapeHtml(player.deckArchetype)}</span>
+        </div>
+      `;
+    }).join('');
+
+    selectedPlayersDiv.innerHTML = selectedHTML;
+
+    // Disable other checkboxes if 8 are selected
+    const allCheckboxes = document.querySelectorAll('input[name="top8Players"]');
+    if (selectedCheckboxes.length >= 8) {
+      allCheckboxes.forEach(cb => {
+        if (!cb.checked) cb.disabled = true;
+      });
+    } else {
+      allCheckboxes.forEach(cb => cb.disabled = false);
+    }
+  }
+
+  // Handle Top 8 form submission
+  handleTop8FormSubmission() {
+    const selectedCheckboxes = document.querySelectorAll('input[name="top8Players"]:checked');
+
+    if (selectedCheckboxes.length !== 8) {
+      authManager.showNotification('Erro', 'Selecione exatamente 8 jogadores para o Top 8', 'error');
+      return;
+    }
+
+    try {
+      const selectedPlayers = Array.from(selectedCheckboxes).map((checkbox, index) => {
+        const player = JSON.parse(checkbox.dataset.player);
+        return {
+          ...player,
+          position: index + 1,
+          setBy: authManager.getCurrentUser().id
+        };
+      });
+
+      dataManager.setManualTop8(selectedPlayers);
+
+      authManager.showNotification(
+        'Top 8 Definido',
+        'O Top 8 manual foi definido com sucesso',
+        'success'
+      );
+
+      app.closeModal();
+      this.loadTop8Data();
+
+    } catch (error) {
+      authManager.showNotification('Erro', error.message, 'error');
+    }
+  }
+
+  // Add player to Top 8
+  addPlayerToTop8(player) {
+    try {
+      const currentTop8 = dataManager.getManualTop8();
+
+      if (currentTop8.length >= 8) {
+        authManager.showNotification('Erro', 'O Top 8 já está completo', 'warning');
+        return;
+      }
+
+      // Check if player already in Top 8
+      if (currentTop8.some(p => p.userId === player.userId)) {
+        authManager.showNotification('Erro', 'Este jogador já está no Top 8', 'warning');
+        return;
+      }
+
+      const newPosition = currentTop8.length + 1;
+      player.position = newPosition;
+      player.setBy = authManager.getCurrentUser().id;
+
+      const updatedTop8 = [...currentTop8, player];
+      dataManager.setManualTop8(updatedTop8);
+
+      authManager.showNotification(
+        'Jogador Adicionado',
+        `${player.name} adicionado ao Top 8`,
+        'success'
+      );
+
+      this.loadTop8Data();
+
+    } catch (error) {
+      authManager.showNotification('Erro', error.message, 'error');
+    }
+  }
+
+  // Edit Top 8 player
+  editTop8Player(position) {
+    const currentTop8 = dataManager.getManualTop8();
+    const player = currentTop8.find(p => p.position === position);
+
+    if (!player) return;
+
+    const modalHTML = `
+      <div class="top8-edit-container">
+        <div class="form-header">
+          <i class="fas fa-edit"></i>
+          <h3>Editar Jogador do Top 8</h3>
+          <p>Posição ${position}º lugar</p>
+        </div>
+        <form id="editTop8Form" class="auth-form">
+          <div class="form-group">
+            <label>Informações do Jogador</label>
+            <div class="player-info-display">
+              <img src="${app.getAvatarUrl(dataManager.getUserById(player.userId))}" alt="${player.name}" class="player-avatar">
+              <div>
+                <strong>${player.name}</strong>
+                <br>${player.deckArchetype}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="editNotes">Observações:</label>
+            <textarea id="editNotes" name="notes" rows="3" placeholder="Observações sobre o jogador...">${Utils.escapeHtml(player.notes || '')}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Estatísticas:</label>
+            <div class="stats-edit">
+              <div class="stat-input">
+                <label>Pontos:</label>
+                <input type="number" id="editPoints" name="totalPoints" value="${player.totalPoints}" min="0">
+              </div>
+              <div class="stat-input">
+                <label>Vitórias:</label>
+                <input type="number" id="editWins" name="wins" value="${player.wins}" min="0">
+              </div>
+              <div class="stat-input">
+                <label>Derrotas:</label>
+                <input type="number" id="editLosses" name="losses" value="${player.losses}" min="0">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i>
+              Salvar Alterações
+            </button>
+            <button type="button" class="btn btn-outline" onclick="app.closeModal()">
+              <i class="fas fa-times"></i>
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    app.showModal('Editar Jogador do Top 8', modalHTML);
+    this.bindEditTop8FormEvents(position);
+  }
+
+  // Bind edit Top 8 form events
+  bindEditTop8FormEvents(position) {
+    const form = document.getElementById('editTop8Form');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleEditTop8Form(position);
+      });
+    }
+  }
+
+  // Handle edit Top 8 form submission
+  handleEditTop8Form(position) {
+    const form = document.getElementById('editTop8Form');
+    const formData = new FormData(form);
+
+    const updates = {
+      notes: formData.get('notes'),
+      totalPoints: parseInt(formData.get('totalPoints')) || 0,
+      wins: parseInt(formData.get('wins')) || 0,
+      losses: parseInt(formData.get('losses')) || 0
+    };
+
+    // Recalculate win rate
+    const totalGames = updates.wins + updates.losses;
+    updates.winRate = totalGames > 0 ? updates.wins / totalGames : 0;
+
+    try {
+      dataManager.updateTop8Player(position, updates);
+
+      authManager.showNotification(
+        'Jogador Atualizado',
+        'As informações do jogador foram atualizadas com sucesso',
+        'success'
+      );
+
+      app.closeModal();
+      this.loadTop8Data();
+
+    } catch (error) {
+      authManager.showNotification('Erro', error.message, 'error');
+    }
+  }
+
+  // Remove player from Top 8
+  removeTop8Player(position) {
+    if (!confirm('Tem certeza que deseja remover este jogador do Top 8?')) {
+      return;
+    }
+
+    try {
+      const currentTop8 = dataManager.getManualTop8();
+      const filteredTop8 = currentTop8
+        .filter(p => p.position !== position)
+        .map((p, index) => ({ ...p, position: index + 1 }));
+
+      dataManager.setManualTop8(filteredTop8);
+
+      authManager.showNotification(
+        'Jogador Removido',
+        'O jogador foi removido do Top 8',
+        'success'
+      );
+
+      this.loadTop8Data();
+
+    } catch (error) {
+      authManager.showNotification('Erro', error.message, 'error');
+    }
+  }
+
+  // Clear manual Top 8
+  clearManualTop8() {
+    if (!confirm('Tem certeza que deseja limpar o Top 8 manual? A classificação voltará a ser calculada automaticamente.')) {
+      return;
+    }
+
+    try {
+      dataManager.clearManualTop8();
+
+      authManager.showNotification(
+        'Top 8 Limpo',
+        'O Top 8 manual foi removido. A classificação agora é automática.',
+        'info'
+      );
+
+      this.loadTop8Data();
+
+    } catch (error) {
+      authManager.showNotification('Erro', error.message, 'error');
+    }
+  }
+
   // Check if user has admin privileges
   requireAdmin() {
     if (!authManager.requireAdmin()) {
