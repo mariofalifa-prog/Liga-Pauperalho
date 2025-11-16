@@ -504,13 +504,28 @@
                 <div class="section-header">
                     <h2 class="section-title">
                         <i class="fas fa-cards"></i>
-                        Decklists
+                        Decklists Mensais
                     </h2>
-                    <p class="section-subtitle">Veja os decks dos participantes da liga atual</p>
+                    <p class="section-subtitle">Veja os decks separados por mês da liga</p>
+                </div>
+
+                <div class="decklists-controls card">
+                    <div class="control-group">
+                        <label>Selecione o Mês:</label>
+                        <select id="decklistMonthSelect" class="form-select">
+                            <option value="">Todos os Meses</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <button class="btn btn-outline" id="exportDecklists">
+                            <i class="fas fa-download"></i>
+                            Exportar Decklists
+                        </button>
+                    </div>
                 </div>
 
                 <div class="decklists-content" id="decklistsContent">
-                    <!-- Decklists will be populated dynamically -->
+                    <!-- Monthly decklists will be populated dynamically -->
                 </div>
             </div>
         </section>
