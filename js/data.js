@@ -519,6 +519,91 @@ class DataManager {
     return game;
   }
 
+  // Create game with result type (2-0, 2-1, 1-0, etc.)
+  createGameWithResult(resultData) {
+    const { player1Id, player2Id, player1Deck, player2Deck, resultType, notes } = resultData;
+
+    let player1Wins = 0;
+    let player2Wins = 0;
+
+    // Parse result type to determine wins
+    switch (resultType) {
+      case '2-0-win':
+        player1Wins = 2;
+        player2Wins = 0;
+        break;
+      case '2-1-win':
+        player1Wins = 2;
+        player2Wins = 1;
+        break;
+      case '1-0-win':
+        player1Wins = 1;
+        player2Wins = 0;
+        break;
+      case '0-2-loss':
+        player1Wins = 0;
+        player2Wins = 2;
+        break;
+      case '1-2-loss':
+        player1Wins = 1;
+        player2Wins = 2;
+        break;
+      case '0-1-loss':
+        player1Wins = 0;
+        player2Wins = 1;
+        break;
+      default:
+        throw new Error('Tipo de resultado inválido');
+    }
+
+    return this.createGame({
+      player1Id,
+      player2Id,
+      player1Wins,
+      player2Wins,
+      player1Deck,
+      player2Deck,
+      notes: `${this.getResultDescription(resultType)}${notes ? ' - ' + notes : ''}`
+    });
+  }
+
+  // Get human-readable result description
+  getResultDescription(resultType) {
+    const descriptions = {
+      '2-0-win': 'Vitória 2-0',
+      '2-1-win': 'Vitória 2-1',
+      '1-0-win': 'Vitória 1-0',
+      '0-2-loss': 'Derrota 0-2',
+      '1-2-loss': 'Derrota 1-2',
+      '0-1-loss': 'Derrota 0-1'
+    };
+    return descriptions[resultType] || resultType;
+  }
+
+  // Check if players have already played each other
+  havePlayersAlreadyPlayed(player1Id, player2Id, leagueId = 'current-league') {
+    return this.data.games.some(game =>
+      game.leagueId === leagueId &&
+      ((game.player1Id === player1Id && game.player2Id === player2Id) ||
+       (game.player1Id === player2Id && game.player2Id === player1Id))
+    );
+  }
+
+  // Check if player has reached max games
+  hasPlayerReachedMaxGames(playerId, leagueId = 'current-league') {
+    const league = this.getLeague(leagueId);
+    const playerGames = this.getUserGames(playerId, leagueId);
+    return playerGames.length >= league.settings.maxGames;
+  }
+
+  // Get league (helper method)
+  getLeague(leagueId = 'current-league') {
+    if (leagueId === 'current-league') {
+      return this.data.leagues.current;
+    }
+    return this.data.leagues.archived.find(league => league.id === leagueId);
+  }
+
   determineWinner(player1Wins, player2Wins) {
     if (player1Wins > player2Wins) return 'player1';
     if (player2Wins > player1Wins) return 'player2';
