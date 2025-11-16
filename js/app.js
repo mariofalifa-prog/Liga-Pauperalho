@@ -558,6 +558,54 @@ class LigaApp {
     this.refreshCurrentSection();
   }
 
+  // Modal methods for compatibility with other modules
+  showModal(title, content) {
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalContent = document.getElementById('modalContent');
+
+    if (modalContent) {
+      // If title is provided, wrap content in modal header
+      if (title && !content.includes('modal-header')) {
+        const wrappedContent = `
+          <div class="modal-header">
+            <h2 class="modal-title">${Utils.escapeHtml(title)}</h2>
+          </div>
+          <div class="modal-body">
+            ${content}
+          </div>
+        `;
+        modalContent.innerHTML = wrappedContent;
+      } else {
+        modalContent.innerHTML = content;
+      }
+    }
+
+    if (modalOverlay) {
+      modalOverlay.classList.add('active');
+    }
+  }
+
+  closeModal() {
+    const modalOverlay = document.getElementById('modalOverlay');
+    if (modalOverlay) {
+      modalOverlay.classList.remove('active');
+    }
+  }
+
+  // Get avatar URL for users
+  getAvatarUrl(user) {
+    if (!user) return 'https://via.placeholder.com/40x40/333/fff?text=?';
+
+    // Generate avatar based on user name or ID
+    const seed = user.name || user.email || user.id || 'default';
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(seed)}&background=2d3748&color=fff&size=40&bold=true`;
+  }
+
+  // Format date time utility
+  formatDateTime(date) {
+    return Utils.formatDate(date);
+  }
+
   // Initialize the app when DOM is ready
   static init() {
     if (document.readyState === 'loading') {
