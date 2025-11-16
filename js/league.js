@@ -618,6 +618,134 @@ class LeagueManager {
     const diffTime = endDate - now;
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
+
+  // Show hero registration form
+  showHeroRegistrationForm() {
+    if (!authManager.requireAuth()) return;
+
+    const overlay = document.getElementById('heroRegistrationOverlay');
+    if (overlay) {
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  // Hide hero registration form
+  hideHeroRegistrationForm() {
+    const overlay = document.getElementById('heroRegistrationOverlay');
+    if (overlay) {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+
+  // Handle hero registration form submission
+  handleHeroRegistration() {
+    if (!authManager.requireAuth()) return;
+
+    const form = document.getElementById('heroRegistrationForm');
+    const formData = new FormData(form);
+
+    const registrationData = {
+      deckArchetype: formData.get('deckArchetype'),
+      deckList: formData.get('deckList'),
+      agreeRules: formData.get('agreeRules') === 'on'
+    };
+
+    // Validation
+    let isValid = true;
+
+    if (!registrationData.deckArchetype) {
+      this.showFormError('heroDeckArchetype', 'Selecione um arquétipo de deck');
+      isValid = false;
+    }
+
+    if (!registrationData.agreeRules) {
+      this.showFormError('heroAgreeRules', 'Você deve concordar com as regras da liga');
+      isValid = false;
+    }
+
+    if (!isValid) return;
+
+    try {
+      const currentUser = authManager.getCurrentUser();
+
+      // Create registration
+      const registration = dataManager.createRegistration({
+        userId: currentUser.id,
+        leagueId: this.currentLeague.id,
+        ...registrationData
+      });
+
+      // Send Discord notification
+      dataManager.sendDiscordNotification(
+        `🎮 Nova Inscrição na Liga!\n\n👤 Jogador: ${currentUser.profile.displayName || currentUser.name}\n🃏 Deck: ${registrationData.deckArchetype}`,
+        'registration'
+      );
+
+      // Show success message
+      authManager.showNotification(
+        'Inscrição Realizada!',
+        `Você se inscreveu na liga com o deck ${registrationData.deckArchetype}`,
+        'success'
+      );
+
+      // Create notification
+      dataManager.createNotification({
+        title: 'Inscrição Confirmada',
+        message: `Sua inscrição na Liga Pauperalho foi confirmada. Boa sorte!`,
+        type: 'success',
+        userId: currentUser.id
+      });
+
+      // Reset form and hide overlay
+      form.reset();
+      this.hideHeroRegistrationForm();
+
+      // Update UI
+      this.updateLeagueStatus();
+      this.updateRegistrationStatus();
+
+      // Redirect to rankings
+      setTimeout(() => {
+        window.location.hash = '#rankings';
+      }, 2000);
+
+    } catch (error) {
+      authManager.showNotification('Erro na Inscrição', error.message, 'error');
+    }
+  }
+
+  // Handle Discord button click
+  handleDiscordButtonClick() {
+    const discordSettings = dataManager.data.settings.discord;
+    if (discordSettings.enabled && discordSettings.inviteUrl) {
+      window.open(discordSettings.inviteUrl, '_blank');
+    } else {
+      // Fallback to default Discord invite
+      window.open('https://discord.gg/pauperalho', '_blank');
+    }
+  }
+
+  // Update hero deck preview
+  updateHeroDeckPreview() {
+    const heroDeckArchetype = document.getElementById('heroDeckArchetype');
+    const heroDeckList = document.getElementById('heroDeckList');
+
+    if (!heroDeckArchetype || !heroDeckList) return;
+
+    const archetype = heroDeckArchetype.value;
+
+    if (archetype && archetype !== 'Selecione seu arquétipo') {
+      // Add placeholder text for deck list
+      if (!heroDeckList.value) {
+        const deckInfo = this.getDeckArchetypeInfo(archetype);
+        heroDeckList.placeholder = `Lista típica de ${archetype}:\n\n${deckInfo.sampleList || 'Adicione sua lista de deck aqui...'}`;
+      }
+    } else {
+      heroDeckList.placeholder = 'Cole aqui a lista do seu deck...';
+    }
+  }
 }
 
 // Create global instance
