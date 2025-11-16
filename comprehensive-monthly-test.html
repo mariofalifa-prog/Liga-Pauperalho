@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Completo do Sistema Mensal - Liga Pauperalho</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f8f9fa;
+        }
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .result.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .console {
+            background: #212529;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px 0;
+            font-size: 12px;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button.success {
+            background: #28a745;
+        }
+        .button.success:hover {
+            background: #1e7e34;
+        }
+        .button.warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        .button.warning:hover {
+            background: #e0a800;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #28a745);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+        .summary-table th,
+        .summary-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .summary-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #495057;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-indicator.success {
+            background: #28a745;
+        }
+        .status-indicator.error {
+            background: #dc3545;
+        }
+        .status-indicator.warning {
+            background: #ffc107;
+        }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .feature-test {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        @media (max-width: 768px) {
+            .feature-test {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🗓️ Teste Completo do Sistema Mensal</h1>
+            <p>Verificação completa de todas as funcionalidades do sistema de ligas mensais</p>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 0%">0%</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="button" onclick="runAllTests()">🚀 Executar Todos os Testes</button>
+            <button class="button success" onclick="runQuickTest()">⚡ Teste Rápido</button>
+            <button class="button warning" onclick="clearResults()">🧹 Limpar Resultados</button>
+        </div>
+
+        <div id="testResults"></div>
+
+        <div class="test-section">
+            <h3>📊 Console de Testes</h3>
+            <div class="console" id="testConsole">Iniciando sistema de testes...\n</div>
+        </div>
+
+        <div class="test-section">
+            <h3>📋 Resumo dos Resultados</h3>
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Funcionalidade</th>
+                        <th>Status</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody id="summaryTable">
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #6c757d;">Aguardando execução dos testes...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Load the actual system -->
+    <script src="js/utils.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="monthly-league-enhancement.js"></script>
+    <script src="js/decklists-monthly.js"></script>
+
+    <script>
+        // Test management
+        let testResults = {};
+        let currentTestIndex = 0;
+        let totalTests = 8;
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            const consoleEl = document.getElementById('testConsole');
+            consoleEl.innerHTML += `[${timestamp}] ${icon} ${message}\n`;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function updateProgress(progress) {
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = `${progress}%`;
+            progressBar.textContent = `${progress}%`;
+        }
+
+        function addTestResult(category, status, details) {
+            testResults[category] = { status, details };
+            updateSummaryTable();
+        }
+
+        function updateSummaryTable() {
+            const tbody = document.getElementById('summaryTable');
+            tbody.innerHTML = '';
+
+            Object.entries(testResults).forEach(([category, result]) => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = category;
+                row.insertCell(1).innerHTML = `<span class="status-indicator ${result.status}"></span>${result.status}`;
+                row.insertCell(2).textContent = result.details;
+            });
+        }
+
+        function clearResults() {
+            document.getElementById('testConsole').innerHTML = 'Console limpo...\n';
+            document.getElementById('testResults').innerHTML = '';
+            testResults = {};
+            updateSummaryTable();
+            updateProgress(0);
+            currentTestIndex = 0;
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Individual test functions
+        async function testModuleLoading() {
+            log('🔍 Testando carregamento de módulos...');
+            updateProgress(12.5);
+
+            try {
+                const checks = [
+                    { name: 'Utils', check: typeof Utils !== 'undefined' },
+                    { name: 'DataManager', check: typeof dataManager !== 'undefined' },
+                    { name: 'MonthlyLeagueManager', check: typeof MonthlyLeagueManager !== 'undefined' },
+                    { name: 'monthlyManager', check: typeof monthlyManager !== 'undefined' },
+                    { name: 'decklistsMonthlyManager', check: typeof window.decklistsMonthlyManager !== 'undefined' }
+                ];
+
+                const passed = checks.filter(c => c.check);
+                const failed = checks.filter(c => !c.check);
+
+                if (failed.length === 0) {
+                    log('✅ Todos os módulos carregados com sucesso');
+                    addTestResult('Carregamento de Módulos', 'success', `${passed.length} módulos carregados`);
+                } else {
+                    log(`❌ Módulos falharam: ${failed.map(f => f.name).join(', ')}`);
+                    addTestResult('Carregamento de Módulos', 'error', `${failed.length} módulos falharam`);
+                }
+
+            } catch (error) {
+                log(`❌ Erro no carregamento: ${error.message}`);
+                addTestResult('Carregamento de Módulos', 'error', error.message);
+            }
+        }
+
+        async function testMonthlySystemCore() {
+            log('🗓️ Testando sistema mensal básico...');
+            updateProgress(25);
+
+            try {
+                // Test month/year functions
+                const testDate = new Date();
+                const monthYear = monthlyManager.getMonthYear(testDate);
+                const leagueId = monthlyManager.getMonthlyLeagueId(testDate);
+
+                // Test current monthly league
+                const currentLeague = monthlyManager.getCurrentMonthlyLeague();
+                const allLeagues = monthlyManager.getAllMonthlyLeagues();
+
+                if (monthYear && leagueId && monthYear.includes('2024')) {
+                    log(`✅ Funções de data funcionando: ${monthYear} / ${leagueId}`);
+                    addTestResult('Sistema Mensal', 'success', `Mês: ${monthYear}, Ligas: ${Object.keys(allLeagues).length}`);
+                } else {
+                    log('❌ Funções de data com problema');
+                    addTestResult('Sistema Mensal', 'error', 'Funções de data inválidas');
+                }
+
+            } catch (error) {
+                log(`❌ Erro no sistema mensal: ${error.message}`);
+                addTestResult('Sistema Mensal', 'error', error.message);
+            }
+        }
+
+        async function testDecklistVisibility() {
+            log('👁️ Testando controle de visibilidade...');
+            updateProgress(37.5);
+
+            try {
+                const currentMonth = monthlyManager.getMonthYear(new Date());
+                const shouldBeVisible = monthlyManager.shouldShowDecklists(currentMonth);
+
+                // Test visibility toggle
+                const originalVisibility = shouldBeVisible;
+                monthlyManager.updateDecklistVisibility(currentMonth, !originalVisibility);
+                const toggledVisibility = monthlyManager.shouldShowDecklists(currentMonth);
+                monthlyManager.updateDecklistVisibility(currentMonth, originalVisibility); // restore
+
+                if (toggledVisibility !== originalVisibility) {
+                    log(`✅ Controle de visibilidade funcionando: ${originalVisibility} → ${toggledVisibility} → ${originalVisibility}`);
+                    addTestResult('Controle de Visibilidade', 'success', 'Toggle funcionou corretamente');
+                } else {
+                    log('⚠️ Toggle de visibilidade sem efeito');
+                    addTestResult('Controle de Visibilidade', 'warning', 'Toggle não alterou estado');
+                }
+
+            } catch (error) {
+                log(`❌ Erro no controle de visibilidade: ${error.message}`);
+                addTestResult('Controle de Visibilidade', 'error', error.message);
+            }
+        }
+
+        async function testMonthlyData() {
+            log('📊 Testando dados mensais...');
+            updateProgress(50);
+
+            try {
+                const currentMonth = monthlyManager.getMonthYear(new Date());
+                const registrations = monthlyManager.getMonthlyRegistrations(currentMonth);
+                const games = monthlyManager.getMonthlyGames(currentMonth);
+                const decklists = monthlyManager.getMonthlyDecklists(currentMonth);
+                const rankings = monthlyManager.calculateMonthlyRankings(currentMonth);
+
+                log(`📝 Inscrições: ${registrations.length}, Jogos: ${games.length}, Decklists: ${decklists.length}, Rankings: ${rankings.length}`);
+                addTestResult('Dados Mensais', 'success', `${registrations.length} inscrições, ${games.length} jogos`);
+
+            } catch (error) {
+                log(`❌ Erro nos dados mensais: ${error.message}`);
+                addTestResult('Dados Mensais', 'error', error.message);
+            }
+        }
+
+        async function testExportFunctionality() {
+            log('📤 Testando exportação...');
+            updateProgress(62.5);
+
+            try {
+                const resultsExport = monthlyManager.exportLeagueResults();
+                const decklistsExport = monthlyManager.exportMonthlyDecklists();
+
+                const hasValidResults = resultsExport &&
+                                      resultsExport.type === 'all_monthly_results' &&
+                                      typeof resultsExport.months === 'object';
+
+                const hasValidDecklists = decklistsExport &&
+                                        decklistsExport.type === 'all_monthly_decklists' &&
+                                        typeof decklistsExport.months === 'object';
+
+                if (hasValidResults && hasValidDecklists) {
+                    log(`✅ Exportação funcionando: Resultados (${resultsExport.totalMonths} meses), Decklists (${decklistsExport.totalMonths} meses)`);
+                    addTestResult('Funcionalidade de Exportação', 'success', 'Exportação OK');
+                } else {
+                    log('❌ Exportação com estrutura inválida');
+                    addTestResult('Funcionalidade de Exportação', 'error', 'Estrutura inválida');
+                }
+
+            } catch (error) {
+                log(`❌ Erro na exportação: ${error.message}`);
+                addTestResult('Funcionalidade de Exportação', 'error', error.message);
+            }
+        }
+
+        async function testDataManipulation() {
+            log('✏️ Testando manipulação de dados...');
+            updateProgress(75);
+
+            try {
+                // Test adding registration
+                const testReg = monthlyManager.addMonthlyRegistration({
+                    userId: 'test-user-' + Date.now(),
+                    deckArchetype: 'Mono Blue Terror',
+                    deckList: '4 Delver of Secrets\n4 Ponder\n4 Preordain'
+                });
+
+                // Test adding game
+                const testGame = monthlyManager.addMonthlyGame({
+                    player1Id: 'test-player-1',
+                    player2Id: 'test-player-2',
+                    player1Wins: 2,
+                    player2Wins: 1,
+                    player1Deck: 'Mono Blue Terror',
+                    player2Deck: 'Mono Red Burn'
+                });
+
+                log(`✅ Manipulação de dados funcionando: Registro ${testReg.id}, Jogo ${testGame.id}`);
+                addTestResult('Manipulação de Dados', 'success', 'Dados adicionados com sucesso');
+
+            } catch (error) {
+                log(`❌ Erro na manipulação: ${error.message}`);
+                addTestResult('Manipulação de Dados', 'error', error.message);
+            }
+        }
+
+        async function testMonthlyIntegration() {
+            log('🔗 Testando integração mensal...');
+            updateProgress(87.5);
+
+            try {
+                // Test if monthly system integrates with existing data
+                const currentLeague = dataManager.getCurrentLeague();
+                const monthlyLeague = monthlyManager.getCurrentMonthlyLeague();
+
+                const integration = currentLeague && monthlyLeague &&
+                                   currentLeague.settings && monthlyLeague.settings;
+
+                if (integration) {
+                    log('✅ Integração mensal funcionando');
+                    addTestResult('Integração Mensal', 'success', 'Sistemas integrados');
+                } else {
+                    log('⚠️ Problemas na integração');
+                    addTestResult('Integração Mensal', 'warning', 'Integração parcial');
+                }
+
+            } catch (error) {
+                log(`❌ Erro na integração: ${error.message}`);
+                addTestResult('Integração Mensal', 'error', error.message);
+            }
+        }
+
+        async function testCompleteWorkflow() {
+            log('🔄 Testando workflow completo...');
+            updateProgress(100);
+
+            try {
+                // Simulate complete monthly workflow
+                const currentMonth = monthlyManager.getMonthYear(new Date());
+
+                // 1. Check if monthly system can handle a complete season
+                const allLeagues = monthlyManager.getAllMonthlyLeagues();
+                const monthCount = Object.keys(allLeagues).length;
+
+                // 2. Test if we can switch between months
+                const availableMonths = Object.keys(allLeagues);
+
+                // 3. Test if data persists correctly
+                const testExport = monthlyManager.exportMonthlyData(currentMonth);
+                const exportValid = testExport && testExport.type;
+
+                if (monthCount >= 0 && exportValid) {
+                    log(`✅ Workflow completo funcionando: ${monthCount} meses, exportação OK`);
+                    addTestResult('Workflow Completo', 'success', `${monthCount} meses disponíveis`);
+                } else {
+                    log('❌ Workflow com problemas');
+                    addTestResult('Workflow Completo', 'error', 'Falha no workflow');
+                }
+
+            } catch (error) {
+                log(`❌ Erro no workflow: ${error.message}`);
+                addTestResult('Workflow Completo', 'error', error.message);
+            }
+        }
+
+        // Main test runner
+        async function runAllTests() {
+            log('🚀 Iniciando todos os testes...');
+            clearResults();
+
+            const tests = [
+                testModuleLoading,
+                testMonthlySystemCore,
+                testDecklistVisibility,
+                testMonthlyData,
+                testExportFunctionality,
+                testDataManipulation,
+                testMonthlyIntegration,
+                testCompleteWorkflow
+            ];
+
+            for (let i = 0; i < tests.length; i++) {
+                await tests[i]();
+                await sleep(500); // Small delay between tests
+            }
+
+            // Final summary
+            const totalTests = Object.keys(testResults).length;
+            const successTests = Object.values(testResults).filter(r => r.status === 'success').length;
+            const errorTests = Object.values(testResults).filter(r => r.status === 'error').length;
+            const warningTests = Object.values(testResults).filter(r => r.status === 'warning').length;
+
+            log(`\n🏁 Testes concluídos!`);
+            log(`📊 Resumo: ${totalTests} totais, ${successTests} sucesso, ${errorTests} erros, ${warningTests} avisos`);
+
+            if (errorTests === 0) {
+                log('🎉 Sistema mensal está pronto para uso!');
+                addTestResult('Status Final', 'success', 'Sistema funcionando perfeitamente');
+            } else {
+                log('⚠️ Há problemas a resolver antes do uso');
+                addTestResult('Status Final', 'error', `${errorTests} problemas críticos`);
+            }
+        }
+
+        // Quick test for core functionality
+        async function runQuickTest() {
+            log('⚡ Executando teste rápido...');
+            clearResults();
+            updateProgress(50);
+
+            try {
+                // Core functionality test
+                const hasMonthlyManager = typeof monthlyManager !== 'undefined';
+                const currentMonth = monthlyManager.getMonthYear(new Date());
+                const monthlyLeague = monthlyManager.getCurrentMonthlyLeague();
+                const canExport = typeof monthlyManager.exportLeagueResults === 'function';
+
+                if (hasMonthlyManager && currentMonth && canExport) {
+                    log('✅ Teste rápido passou - funcionalidades básicas OK');
+                    addTestResult('Teste Rápido', 'success', 'Sistema básico funcional');
+                    updateProgress(100);
+                } else {
+                    log('❌ Teste rápido falhou - problemas básicos');
+                    addTestResult('Teste Rápido', 'error', 'Falha nas funcionalidades básicas');
+                }
+
+            } catch (error) {
+                log(`❌ Erro no teste rápido: ${error.message}`);
+                addTestResult('Teste Rápido', 'error', error.message);
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            log('🌐 Página de teste carregada');
+            log('Clique em "Executar Todos os Testes" para verificação completa');
+        });
+    </script>
+</body>
+</html>
