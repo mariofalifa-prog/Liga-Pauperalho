@@ -114,6 +114,7 @@ class LigaApp {
     this.routes = {
       'home': () => this.showSection('home'),
       'rankings': () => this.handleRankingsRoute(),
+      'games': () => this.handleGamesRoute(),
       'rules': () => this.showSection('rules'),
       'decklists': () => this.handleDecklistsRoute(),
       'statistics': () => this.handleStatisticsRoute(),
